@@ -44,7 +44,7 @@ def generate_kiota_py_client(root: Path):
     ).get("Version")
     print(f"Using Kiota version: {version}")
 
-    tmpdir = root / f"kiota_tmp/{version}"
+    tmpdir = root / f"kiota_tmp-{version}"
     if not tmpdir.exists():
         print(f"Kiota not found on {tmpdir}. Downloading Kiota release.")
         # Download the Kiota release archive
