@@ -807,6 +807,21 @@ opentelemetry-api = ">=1.20.0"
 opentelemetry-sdk = ">=1.20.0"
 
 [[package]]
+name = "microsoft-kiota-serialization-form"
+version = "0.1.0"
+description = "Implementation of Kiota Serialization Interfaces for URI-Form encoded serialization"
+optional = false
+python-versions = "*"
+files = [
+    {file = "microsoft_kiota_serialization_form-0.1.0-py2.py3-none-any.whl", hash = "sha256:5bc76fb2fc67d7c1f878f876d252ea814e4fc38df505099b9b86de52d974380a"},
+    {file = "microsoft_kiota_serialization_form-0.1.0.tar.gz", hash = "sha256:663ece0cb1a41fe9ddfc9195aa3f15f219e14d2a1ee51e98c53ad8d795b2785d"},
+]
+
+[package.dependencies]
+microsoft-kiota_abstractions = ">=1.0.0,<2.0.0"
+pendulum = ">=3.0.0"
+
+[[package]]
 name = "microsoft-kiota-serialization-json"
 version = "1.1.0"
 description = "Implementation of Kiota Serialization interfaces for JSON"
@@ -822,19 +837,18 @@ microsoft-kiota_abstractions = ">=1.0.0,<2.0.0"
 pendulum = ">=3.0.0b1"
 
 [[package]]
-name = "microsoft-kiota-serialization-text"
-version = "1.0.0"
-description = "Implementation of Kiota Serialization interfaces for text/plain"
+name = "microsoft-kiota-serialization-multipart"
+version = "0.1.0"
+description = "Implementation of Kiota Serialization Interfaces for Multipart serialization"
 optional = false
 python-versions = "*"
 files = [
-    {file = "microsoft_kiota_serialization_text-1.0.0-py2.py3-none-any.whl", hash = "sha256:1d3789e012b603e059a36cc675d1fd08cb81e0dde423d970c0af2eabce9c0d43"},
-    {file = "microsoft_kiota_serialization_text-1.0.0.tar.gz", hash = "sha256:c3dd3f409b1c4f4963bd1e41d51b65f7e53e852130bb441d79b77dad88ee76ed"},
+    {file = "microsoft_kiota_serialization_multipart-0.1.0-py2.py3-none-any.whl", hash = "sha256:ef183902e77807806b8a181cdde53ba5bc04c6c9bdb2f7d80f8bad5d720e0015"},
+    {file = "microsoft_kiota_serialization_multipart-0.1.0.tar.gz", hash = "sha256:14e89e92582e6630ddbc70ac67b70bf189dacbfc41a96d3e1d10339e86c8dde5"},
 ]
 
 [package.dependencies]
 microsoft-kiota_abstractions = ">=1.0.0,<2.0.0"
-python-dateutil = ">=2.8.2"
 
 [[package]]
 name = "mypy"
@@ -1761,4 +1775,4 @@ hf = ["huggingface-hub"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">= 3.9, < 3.11"
-content-hash = "ccea5b9da870c89b1aae78de8406f06cd9e7a8b406fd46e236a3eef4141a2f31"
+content-hash = "6faaab86ba3c623a482870f2bab65022f17c804a2ef898e54346853f16a293df"
