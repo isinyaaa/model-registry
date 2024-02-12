@@ -1,24 +1,41 @@
 import os
 import time
+from pathlib import Path
 
 import pytest
 from model_registry.core import ModelRegistryAPIClient
-
-# from testcontainers.core.waiting_utils import wait_for_logs
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.waiting_utils import wait_for_logs
 
 
 @pytest.fixture(scope="session")
-def mlmd_conn(request):
-    model_registry_root_dir = model_registry_root(request)
-    print(
-        "Assuming this is the Model Registry root directory:", model_registry_root_dir
-    )
-    shared_volume = model_registry_root_dir / "test/config/ml-metadata"
+def repo_root(request) -> Path:
+    root = request.config.rootpath.parent.parent
+    print("Assuming this is the Model Registry root directory:", root)
+    return root
+
+
+# ruff: noqa: PT021 supported
+@pytest.fixture(scope="session")
+def mr_container(request, repo_root: Path) -> DockerContainer:
+    shared_volume = repo_root / "test/config/ml-metadata"
     sqlite_db_file = shared_volume / "metadata.sqlite.db"
     if sqlite_db_file.exists():
         msg = f"The file {sqlite_db_file} already exists; make sure to cancel it before running these tests."
         raise FileExistsError(msg)
-    # wait_for_logs(container, "Server listening on")
+    container = DockerContainer("gcr.io/tfx-oss-public/ml_metadata_store_server:1.14.0")
+    container.with_exposed_ports(8080)
+    container.with_volume_mapping(
+        shared_volume,
+        "/tmp/shared",  # noqa: S108
+        "rw",
+    )
+    container.with_env(
+        "METADATA_STORE_SERVER_CONFIG_FILE",
+        "/tmp/shared/conn_config.pb",  # noqa: S108
+    )
+    container.start()
+    wait_for_logs(container, "Server listening on")
     os.system('docker container ls --format "table {{.ID}}\t{{.Names}}\t{{.Ports}}" -a')  # noqa governed test
     print("waited for logs and port")
 
@@ -26,25 +43,26 @@ def mlmd_conn(request):
     # removing this callback might result in mlmd container shutting down before the tests had chance to fully run,
     # and resulting in grpc connection resets.
     def teardown():
-        # container.stop()
+        container.stop()
         print("teardown of plain_wrapper completed.")
 
-    request.addfinalizer(teardown)  # noqa: PT021
+    request.addfinalizer(teardown)
 
     time.sleep(
         3
     )  # allowing some time for mlmd grpc to fully stabilize (is "spent" once per pytest session anyway)
 
-
-def model_registry_root(request):
-    return (request.config.rootpath / "../..").resolve()  # resolves to absolute path
+    return container
 
 
-@pytest.fixture()
-def mr_api(request) -> ModelRegistryAPIClient:
-    sqlite_db_file = (
-        model_registry_root(request) / "test/config/ml-metadata/metadata.sqlite.db"
-    )
+@pytest.fixture(scope="session")
+def mr_api(
+    request,
+    repo_root: Path,
+    mr_container: DockerContainer,
+) -> ModelRegistryAPIClient:
+    sqlite_db_file = repo_root / "test/config/ml-metadata/metadata.sqlite.db"
+    store = ModelRegistryAPIClient(int(container.get_exposed_port(8080)))
 
     def teardown():
         try:
@@ -56,13 +74,20 @@ def mr_api(request) -> ModelRegistryAPIClient:
 
     request.addfinalizer(teardown)
 
-    # return ModelRegistryAPIClient()
+    return store
 
 
-def wait_for_grpc(
-    # container: DockerContainer,
-    timeout=6,
-    interval=2,
+@pytest.fixture()
+def mr_api(store_wrapper: MLMDStore) -> ModelRegistryAPIClient:
+    mr = object.__new__(ModelRegistryAPIClient)
+    mr._store = store_wrapper
+    return mr
+
+
+def poll_for_ready(
+    container: DockerContainer,
+    timeout: float = 6.0,
+    interval: float = 0.5,
 ):
     start = time.time()
     while True:
@@ -72,10 +97,12 @@ def wait_for_grpc(
             pass
         except Exception as e:
             print(e)
-            # print("Container logs:\n", container.get_logs())
+            print("Container logs:\n", container.get_logs())
             print("Container not ready. Retrying...")
-        if results is not None:
-            return duration
-        if timeout and duration > timeout:
-            raise TimeoutError("wait_for_grpc not ready %.3f seconds" % timeout)
+        else:
+            if results is not None:
+                return duration
+            if timeout and duration > timeout:
+                msg = f"container not ready after timeout: {timeout}s"
+                raise TimeoutError(msg)
         time.sleep(interval)

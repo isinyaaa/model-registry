@@ -56,7 +56,7 @@ def test_get(mr_client: ModelRegistry):
         model_format_name="test_format",
         model_format_version="test_version",
         version=version,
-        metadata=metadata
+        metadata=metadata,
     )
 
     assert (_rm := mr_client.get_registered_model(name))
@@ -113,14 +113,16 @@ def test_hf_import(mr_client: ModelRegistry):
     assert mv.author == author
     assert mv.metadata["model_author"] == author
     assert mv.metadata["model_origin"] == "huggingface_hub"
-    assert mv.metadata["source_uri"] == "https://huggingface.co/openai-community/gpt2/resolve/main/onnx/decoder_model.onnx"
+    assert (
+        mv.metadata["source_uri"]
+        == "https://huggingface.co/openai-community/gpt2/resolve/main/onnx/decoder_model.onnx"
+    )
     assert mv.metadata["repo"] == name
     assert mr_client.get_model_artifact(name, version)
 
 
 def test_hf_import_default_env(mr_client: ModelRegistry):
-    """Test setting environment variables, hence triggering defaults, does _not_ interfere with HF metadata
-    """
+    """Test setting environment variables, hence triggering defaults, does _not_ interfere with HF metadata"""
     pytest.importorskip("huggingface_hub")
     name = "openai-community/gpt2"
     version = "1.2.3"
@@ -140,7 +142,10 @@ def test_hf_import_default_env(mr_client: ModelRegistry):
     assert (mv := mr_client.get_model_version(name, version))
     assert mv.metadata["model_author"] == author
     assert mv.metadata["model_origin"] == "huggingface_hub"
-    assert mv.metadata["source_uri"] == "https://huggingface.co/openai-community/gpt2/resolve/main/onnx/decoder_model.onnx"
+    assert (
+        mv.metadata["source_uri"]
+        == "https://huggingface.co/openai-community/gpt2/resolve/main/onnx/decoder_model.onnx"
+    )
     assert mv.metadata["repo"] == name
     assert mr_client.get_model_artifact(name, version)
 

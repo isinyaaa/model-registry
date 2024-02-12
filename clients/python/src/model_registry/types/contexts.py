@@ -21,25 +21,19 @@ class ModelVersion(BaseResourceModel):
     """Represents a model version.
 
     Attributes:
-        model_name: Name of the model associated with this version.
-        version: Version of the model.
+        name: Model version name.
         author: Author of the model version.
         description: Description of the object.
         external_id: Customizable ID. Has to be unique among instances of the same type.
-        artifacts: Artifacts associated with this version.
         metadata: Metadata associated with this version.
     """
 
-    model_name: str
-    version: str
+    name: str
     author: str
-    metadata: dict[str, ScalarType] = field(factory=dict)
-    artifacts: list[BaseArtifact] = field(init=False, factory=list)
+    metadata: dict[str, Any] = field(factory=dict)
+    # state: ModelVersionState = field(kw_only=True, default=ModelVersionState.LIVE)
 
-    _registered_model_id: str | None = field(init=False, default=None)
-
-    def __attrs_post_init__(self) -> None:
-        self.name = self.version
+    registered_model_id: str | None = field(kw_only=True, default=None)
 
 
 @define(slots=False)

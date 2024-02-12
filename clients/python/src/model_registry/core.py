@@ -24,7 +24,9 @@ class ModelRegistryAPIClient:
         """
         self._server_address = server_address
 
-    def upsert_registered_model(self, registered_model: RegisteredModel) -> str:
+    def upsert_registered_model(
+        self, registered_model: RegisteredModel
+    ) -> RegisteredModel:
         """Upsert a registered model.
 
         Updates or creates a registered model on the server.
@@ -68,7 +70,7 @@ class ModelRegistryAPIClient:
 
     def get_registered_models(
         self, options: ListOptions | None = None
-    ) -> Sequence[RegisteredModel]:
+    ) -> list[RegisteredModel]:
         """Fetch registered models.
 
         Args:
@@ -81,7 +83,7 @@ class ModelRegistryAPIClient:
 
     def upsert_model_version(
         self, model_version: ModelVersion, registered_model_id: str
-    ) -> str:
+    ) -> ModelVersion:
         """Upsert a model version.
 
         Updates or creates a model version on the server.
@@ -109,7 +111,7 @@ class ModelRegistryAPIClient:
 
     def get_model_versions(
         self, registered_model_id: str, options: ListOptions | None = None
-    ) -> Sequence[ModelVersion]:
+    ) -> list[ModelVersion]:
         """Fetch model versions by registered model ID.
 
         Args:
@@ -124,7 +126,7 @@ class ModelRegistryAPIClient:
     def get_model_version_by_params(
         self,
         registered_model_id: str | None = None,
-        version: str | None = None,
+        name: str | None = None,
         external_id: str | None = None,
     ) -> ModelVersion | None:
         """Fetch a model version by associated parameters.
@@ -133,7 +135,7 @@ class ModelRegistryAPIClient:
 
         Args:
             registered_model_id: Registered model ID.
-            version: Model version.
+            name: Model version name.
             external_id: Model version external ID.
 
         Returns:
@@ -146,7 +148,7 @@ class ModelRegistryAPIClient:
 
     def upsert_model_artifact(
         self, model_artifact: ModelArtifact, model_version_id: str
-    ) -> str:
+    ) -> ModelArtifact:
         """Upsert a model artifact.
 
         Updates or creates a model artifact on the server.
@@ -196,7 +198,7 @@ class ModelRegistryAPIClient:
         self,
         model_version_id: str | None = None,
         options: ListOptions | None = None,
-    ) -> Sequence[ModelArtifact]:
+    ) -> list[ModelArtifact]:
         """Fetches model artifacts.
 
         Args:

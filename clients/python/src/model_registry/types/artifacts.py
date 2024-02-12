@@ -12,13 +12,15 @@ Todo:
 
 from __future__ import annotations
 
+from abc import ABC
+
 from attrs import define, field
 
 from .base import BaseResourceModel
 
 
 @define(slots=False)
-class BaseArtifact(BaseResourceModel):
+class BaseArtifactModel(BaseResourceModel, ABC):
     """Abstract base class for all artifacts.
 
     Attributes:
@@ -33,7 +35,7 @@ class BaseArtifact(BaseResourceModel):
 
 
 @define(slots=False, auto_attribs=True)
-class ModelArtifact(BaseArtifact):
+class ModelArtifact(BaseArtifactModel):
     """Represents a Model.
 
     Attributes:

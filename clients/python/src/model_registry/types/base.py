@@ -23,9 +23,9 @@ class BaseResourceModel(ABC):
         last_update_time_since_epoch: Seconds elapsed since object last update time, measured against epoch.
     """
 
-    name: str = field(init=False)
-    id: str | None = field(init=False, default=None)
+    name: str
+    id: str | None = field(kw_only=True, default=None)
     description: str | None = field(kw_only=True, default=None)
     external_id: str | None = field(kw_only=True, default=None)
-    create_time_since_epoch: int | None = field(init=False, default=None)
-    last_update_time_since_epoch: int | None = field(init=False, default=None)
+    create_time_since_epoch: str | None = field(kw_only=True, default=None)
+    last_update_time_since_epoch: str | None = field(kw_only=True, default=None)
