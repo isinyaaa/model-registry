@@ -1,13 +1,13 @@
 """Standard client for the model registry."""
+
 from __future__ import annotations
 
 import os
-from typing import get_args
+from typing import Any, Union
 from warnings import warn
 
 from .core import ModelRegistryAPIClient
 from .exceptions import StoreException
-from .store import ScalarType
 from .types import ModelArtifact, ModelVersion, RegisteredModel
 
 
@@ -17,11 +17,7 @@ class ModelRegistry:
     def __init__(
         self,
         server_address: str,
-        port: int,
         author: str,
-        client_key: str | None = None,
-        server_cert: str | None = None,
-        custom_ca: str | None = None,
     ):
         """Constructor.
 
@@ -35,17 +31,13 @@ class ModelRegistry:
         """
         # TODO: get args from env
         self._author = author
-        self._api = ModelRegistryAPIClient(
-            server_address, port, client_key, server_cert, custom_ca
-        )
+        self._api = ModelRegistryAPIClient(server_address)
 
     def _register_model(self, name: str) -> RegisteredModel:
         if rm := self._api.get_registered_model_by_params(name):
             return rm
 
-        rm = RegisteredModel(name)
-        self._api.upsert_registered_model(rm)
-        return rm
+        return self._api.upsert_registered_model(RegisteredModel(name))
 
     def _register_new_version(
         self, rm: RegisteredModel, version: str, author: str, /, **kwargs
@@ -55,17 +47,17 @@ class ModelRegistry:
             msg = f"Version {version} already exists"
             raise StoreException(msg)
 
-        mv = ModelVersion(rm.name, version, author, **kwargs)
-        self._api.upsert_model_version(mv, rm.id)
-        return mv
+        return self._api.upsert_model_version(
+            ModelVersion(version, author, **kwargs), rm.id
+        )
 
     def _register_model_artifact(
-        self, mv: ModelVersion, uri: str, /, **kwargs
+        self, mv: ModelVersion, name: str, uri: str, /, **kwargs
     ) -> ModelArtifact:
         assert mv.id is not None, "Model version must have an ID"
-        ma = ModelArtifact(mv.model_name, uri, **kwargs)
-        self._api.upsert_model_artifact(ma, mv.id)
-        return ma
+        return self._api.upsert_model_artifact(
+            ModelArtifact(name, uri, **kwargs), mv.id
+        )
 
     def register_model(
         self,
@@ -80,7 +72,7 @@ class ModelRegistry:
         storage_key: str | None = None,
         storage_path: str | None = None,
         service_account_name: str | None = None,
-        metadata: dict[str, ScalarType] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> RegisteredModel:
         """Register a model.
 
@@ -115,6 +107,7 @@ class ModelRegistry:
         self._register_model_artifact(
             mv,
             uri,
+            name,
             model_format_name=model_format_name,
             model_format_version=model_format_version,
             storage_key=storage_key,
@@ -124,7 +117,7 @@ class ModelRegistry:
 
         return rm
 
-    def default_metadata(self) -> dict[str, ScalarType]:
+    def default_metadata(self) -> dict[str, Any]:
         """Default metadata valorisations.
 
         When not explicitly supplied by the end users, these valorisations will be used
@@ -134,7 +127,9 @@ class ModelRegistry:
             default metadata valorisations.
         """
         return {
-            key: os.environ[key] for key in ["AWS_S3_ENDPOINT", "AWS_S3_BUCKET", "AWS_DEFAULT_REGION"] if key in os.environ
+            key: os.environ[key]
+            for key in ["AWS_S3_ENDPOINT", "AWS_S3_BUCKET", "AWS_DEFAULT_REGION"]
+            if key in os.environ
         }
 
     def register_hf_model(
@@ -215,7 +210,7 @@ class ModelRegistry:
                     k: v
                     for k, v in card_data.to_dict().items()
                     # TODO: (#151) preserve tags, possibly other complex metadata
-                    if isinstance(v, get_args(ScalarType))
+                    if isinstance(v, Union[bool, int, str, float])
                 }
             )
         return self.register_model(
@@ -254,7 +249,7 @@ class ModelRegistry:
         Raises:
             StoreException: If the model does not exist.
         """
-        if not (rm := self._api.get_registered_model_by_params(name)):
+        if not (rm := self.get_registered_model(name)):
             msg = f"Model {name} does not exist"
             raise StoreException(msg)
         return self._api.get_model_version_by_params(rm.id, version)

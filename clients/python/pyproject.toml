@@ -12,8 +12,7 @@ homepage = "https://github.com/kubeflow/model-registry"
 
 [tool.poetry.dependencies]
 python = ">= 3.9, < 3.11"
-attrs = "^21.0"
-ml-metadata = "^1.14.0"
+attrs = "^23.2.0"
 # you might consider using locally the following alternative, when developing on Apple-silicon/ARM-based computers:
 # ml-metadata = { url = "https://github.com/opendatahub-io/ml-metadata/releases/download/v1.14.0%2Bremote.1/ml_metadata-1.14.0+remote.1-py3-none-any.whl" }
 typing-extensions = "^4.8"
