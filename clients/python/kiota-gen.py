@@ -50,7 +50,7 @@ def generate_kiota_py_client(root: Path):
         # Download the Kiota release archive
         url = f"https://github.com/microsoft/kiota/releases/download/v{version}/{release_name}.zip"
         print(f"Downloading Kiota from URL: {url}")
-        response = requests.get(url)
+        response = requests.get(url, timeout=10)
         zip_archive = zipfile.ZipFile(io.BytesIO(response.content))
         tmpdir.mkdir(parents=True)
         zip_archive.extractall(tmpdir)
