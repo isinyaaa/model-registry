@@ -5,21 +5,25 @@ import stat
 import xml.etree.ElementTree as ET
 import zipfile
 from pathlib import Path
-from typing import cast
+from typing import NamedTuple, cast
 
 import requests
 
-KIOTA_OS_NAMES = {"Windows": "win", "Darwin": "osx", "Linux": "linux"}
-KIOTA_ARCH_NAMES = {
-    "x86_64": "x64",
-    "amd64": "x64",
-    "i386": "x86",
-    "x86": "x86",
-    "x86_64": "x64",
-    "amd64": "x64",
-    "aarch64": "arm64",
-    "arm64": "arm64",
-}
+
+class Arch(NamedTuple):
+    name: str
+    machine_names: list[str]
+
+    def matches(self, machine: str) -> bool:
+        return machine in self.machine_names
+
+
+KIOTA_OS_NAMES = {"Darwin": "osx", "Linux": "linux"}
+KIOTA_ARCH_MAP = [
+    Arch("x64", ["x86_64", "amd64"]),
+    Arch("x86", ["x86", "i386"]),
+    Arch("arm64", ["aarch64"]),
+]
 
 
 def generate_kiota_py_client(root: Path):
@@ -29,7 +33,7 @@ def generate_kiota_py_client(root: Path):
         exit(1)
 
     machine = platform.machine().lower()
-    arch_name = KIOTA_ARCH_NAMES.get(machine)
+    arch_name = next((arch.name for arch in KIOTA_ARCH_MAP if arch.matches(machine)), None)
     if arch_name is None:
         print("Unsupported architecture.")
         exit(1)
