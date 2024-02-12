@@ -1,6 +1,6 @@
 .PHONY: clean
 clean:
-	rm -rf model-registry.yaml src/model_registry/{api,models,kiota-lock.json,model_registry_client.py} kiota_tmp dist
+	rm -rf src/model_registry/{api,models,kiota-lock.json,model_registry_client.py} kiota_tmp dist
 
 .PHONY: install
 install:
