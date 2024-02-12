@@ -6,6 +6,16 @@ authors = ["Isabella Basso do Amaral <idoamara@redhat.com>"]
 license = "Apache-2.0"
 readme = "README.md"
 homepage = "https://github.com/kubeflow/model-registry"
+repository = "https://github.com/kubeflow/model-registry"
+keywords = ["model", "registry"]
+
+include = [{ path = "model-registry.yaml", format = ["sdist", "wheel"] }]
+# exclude = [
+#     { path = "apicurioregistrysdk/__pycache__", format = [
+#         "sdist",
+#         "wheel",
+#     ] },
+# ]
 
 [tool.poetry.urls]
 "Issues" = "https://github.com/kubeflow/model-registry/issues"
@@ -16,6 +26,11 @@ attrs = "^23.2.0"
 # you might consider using locally the following alternative, when developing on Apple-silicon/ARM-based computers:
 # ml-metadata = { url = "https://github.com/opendatahub-io/ml-metadata/releases/download/v1.14.0%2Bremote.1/ml_metadata-1.14.0+remote.1-py3-none-any.whl" }
 typing-extensions = "^4.8"
+
+microsoft-kiota-abstractions = "^1.0.0"
+microsoft-kiota-http = "^1.2.1"
+microsoft-kiota-serialization-json = "^1.0.1"
+microsoft-kiota-serialization-text = "^1.0.0"
 
 huggingface-hub = { version = "^0.20.1", optional = true }
 
@@ -34,6 +49,9 @@ ruff = "^0.1.6"
 mypy = "^1.7.0"
 testcontainers = "^3.7.1"
 
+pytest-asyncio = "^0.21.0"
+requests = "2.31.0"
+
 [tool.coverage.run]
 branch = true
 source = ["model_registry"]
@@ -46,14 +64,24 @@ tests = ["tests", "*/tests"]
 show_missing = true
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core", "requests", "shutils"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.build]
+generate-setup-file = false
+script = "kiota-gen.py"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
 
 [tool.black]
 line-length = 119
 
 [tool.ruff]
 target-version = "py39"
+respect-gitignore = true
+
+[tool.ruff.lint]
 select = [
     "F", # pyflakes
     # pycodestyle
@@ -74,20 +102,13 @@ select = [
     "SIM", # flake8-simplify
     "UP",  # pyupgrade
 ]
-respect-gitignore = true
 ignore = [
     "D105", # missing docstring in magic method
     "E501", # line too long
     "S101", # use of assert detected
 ]
-
-[tool.ruff.lint.pydocstyle]
-convention = "google"
-
-[tool.ruff.per-file-ignores]
-"tests/**/*.py" = [
-    "D", # missing docstring in public module
-]
-
-[tool.ruff.mccabe]
-max-complexity = 8
+pydocstyle.convention = "google"
+per-file-ignores = { "tests/**/*.py" = [
+    "D",
+] } # missing docstring in public module
+mccabe.max-complexity = 8
