@@ -5,6 +5,7 @@ import stat
 import xml.etree.ElementTree as ET
 import zipfile
 from pathlib import Path
+from typing import cast
 
 import requests
 
@@ -35,12 +36,12 @@ def generate_kiota_py_client(root: Path):
 
     release_name = f"{os_name}-{arch_name}"
     # Detecting the Kiota version from a .csproj file so that it can be updated by automatic tool (e.g. Dependabot)
-    version = (
+    version = cast(
+        ET.Element,
         ET.parse(root / "kiota-version.csproj")  # noqa: S314
         .getroot()
-        .find(".//*[@Include='Microsoft.OpenApi.Kiota.Builder']")
-        .get("Version")
-    )
+        .find(".//*[@Include='Microsoft.OpenApi.Kiota.Builder']"),
+    ).get("Version")
     print(f"Using Kiota version: {version}")
 
     tmpdir = root / f"kiota_tmp/{version}"
