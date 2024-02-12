@@ -2,7 +2,6 @@ import io
 import os
 import platform
 import stat
-import sys
 import xml.etree.ElementTree as ET
 import zipfile
 from pathlib import Path
@@ -22,59 +21,64 @@ KIOTA_ARCH_NAMES = {
 }
 
 
-def generate_kiota_client_files(setup_kwargs):
-    kiota_os_name = KIOTA_OS_NAMES.get(platform.system(), None)
-    if kiota_os_name is None:
+def generate_kiota_py_client(root: Path):
+    os_name = KIOTA_OS_NAMES.get(platform.system())
+    if os_name is None:
         print("Unsupported operating system.")
         exit(1)
 
     machine = platform.machine().lower()
-    kiota_arch_name = KIOTA_ARCH_NAMES.get(machine)
-    if kiota_arch_name is None:
+    arch_name = KIOTA_ARCH_NAMES.get(machine)
+    if arch_name is None:
         print("Unsupported architecture.")
         exit(1)
 
-    kiota_release_name = f"{kiota_os_name}-{kiota_arch_name}.zip"
+    release_name = f"{os_name}-{arch_name}"
     # Detecting the Kiota version from a .csproj file so that it can be updated by automatic tool (e.g. Dependabot)
-    kiota_version = (
-        ET.parse(os.path.join(sys.path[0], "kiota-version.csproj"))
+    version = (
+        ET.parse(root / "kiota-version.csproj")  # noqa: S314
         .getroot()
         .find(".//*[@Include='Microsoft.OpenApi.Kiota.Builder']")
         .get("Version")
     )
-    print(f"Using Kiota version: {kiota_version}")
-    # Download the Kiota release archive
-    url = f"https://github.com/microsoft/kiota/releases/download/v{kiota_version}/{kiota_release_name}"
+    print(f"Using Kiota version: {version}")
 
-    tmpdir = os.path.join(sys.path[0], "kiota_tmp", kiota_version)
-    if not os.path.exists(tmpdir):
+    tmpdir = root / f"kiota_tmp/{version}"
+    if not tmpdir.exists():
+        print(f"Kiota not found on {tmpdir}. Downloading Kiota release.")
+        # Download the Kiota release archive
+        url = f"https://github.com/microsoft/kiota/releases/download/v{version}/{release_name}.zip"
         print(f"Downloading Kiota from URL: {url}")
         response = requests.get(url)
         zip_archive = zipfile.ZipFile(io.BytesIO(response.content))
-        os.makedirs(tmpdir)
+        tmpdir.mkdir(parents=True)
         zip_archive.extractall(tmpdir)
     else:
         print(
             "Using kiota already available on path if something goes wrong, please clean the local 'kiota_tmp' folder."
         )
 
-    kiota_bin = os.path.join(tmpdir, "kiota")
+    kiota_bin = tmpdir / "kiota"
     st = os.stat(kiota_bin)
     os.chmod(kiota_bin, st.st_mode | stat.S_IEXEC)
 
-    openapi_doc = Path(__file__).parent.joinpath("model-registry.yaml")
-    output = Path(__file__).parent.joinpath("src", "model_registry")
+    openapi_doc = root / "model-registry.yaml"
+    output = root / "src/model_registry"
 
-    command = f'{kiota_bin} generate --language=python --openapi="{openapi_doc}" --output="{output}" --class-name=ModelRegistryClient --namespace-name=model_registry --clear-cache'
+    command = f"""
+        {kiota_bin} generate \
+            --language=python --openapi="{openapi_doc}" --output="{output}" \
+            --class-name=ModelRegistryClient --namespace-name=model_registry \
+            --clear-cache
+        """
     print(f"Executing kiota command: {command}")
 
     os.system(command)
     print("Kiota client generation has been successful")
-    return setup_kwargs
 
 
 if __name__ == "__main__":
-    if not os.path.exists(
-        os.path.join(sys.path[0], "src", "model_registry", "kiota-lock.json")
-    ):
-        generate_kiota_client_files({})
+    py_root = Path(__file__).parent
+    kiota_lock_file = py_root / "src/model_registry/kiota-lock.json"
+    if not kiota_lock_file.exists():
+        generate_kiota_py_client(py_root)
