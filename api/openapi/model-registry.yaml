@@ -971,6 +971,8 @@ components:
     ModelArtifact:
       description: An ML model artifact.
       type: object
+      required:
+        - artifactType
       allOf:
         - $ref: "#/components/schemas/BaseArtifact"
         - $ref: "#/components/schemas/ModelArtifactCreate"
@@ -982,6 +984,8 @@ components:
     DocArtifact:
       description: A document.
       type: object
+      required:
+        - artifactType
       allOf:
         - $ref: "#/components/schemas/BaseArtifact"
         - type: object
@@ -1345,12 +1349,6 @@ components:
       allOf:
         - $ref: "#/components/schemas/BaseArtifactCreate"
         - $ref: "#/components/schemas/BaseResource"
-        - required:
-            - artifactType
-          type: object
-          properties:
-            artifactType:
-              type: string
     ServingEnvironmentList:
       description: List of ServingEnvironments.
       type: object

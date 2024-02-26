@@ -83,15 +83,6 @@ func AssertBaseArtifactCreateConstraints(obj model.BaseArtifactCreate) error {
 
 // AssertBaseArtifactRequired checks if the required fields are not zero-ed
 func AssertBaseArtifactRequired(obj model.BaseArtifact) error {
-	elements := map[string]interface{}{
-		"artifactType": obj.ArtifactType,
-	}
-	for name, el := range elements {
-		if isZero := IsZeroValue(el); isZero {
-			return &RequiredError{Field: name}
-		}
-	}
-
 	return nil
 }
 

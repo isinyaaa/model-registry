@@ -103,16 +103,16 @@ func (c *MLMDToOpenAPIConverterImpl) ConvertModelArtifact(source *proto.Artifact
 		openapiModelArtifact.Id = converter.Int64ToString((*source).Id)
 		openapiModelArtifact.CreateTimeSinceEpoch = converter.Int64ToString((*source).CreateTimeSinceEpoch)
 		openapiModelArtifact.LastUpdateTimeSinceEpoch = converter.Int64ToString((*source).LastUpdateTimeSinceEpoch)
-		xstring3, err := converter.MapArtifactType(source)
-		if err != nil {
-			return nil, fmt.Errorf("error setting field ArtifactType: %w", err)
-		}
-		openapiModelArtifact.ArtifactType = xstring3
 		openapiModelArtifact.ModelFormatName = converter.MapModelArtifactFormatName((*source).Properties)
 		openapiModelArtifact.StorageKey = converter.MapModelArtifactStorageKey((*source).Properties)
 		openapiModelArtifact.StoragePath = converter.MapModelArtifactStoragePath((*source).Properties)
 		openapiModelArtifact.ModelFormatVersion = converter.MapModelArtifactFormatVersion((*source).Properties)
 		openapiModelArtifact.ServiceAccountName = converter.MapModelArtifactServiceAccountName((*source).Properties)
+		xstring3, err := converter.MapArtifactType(source)
+		if err != nil {
+			return nil, fmt.Errorf("error setting field ArtifactType: %w", err)
+		}
+		openapiModelArtifact.ArtifactType = xstring3
 		pOpenapiModelArtifact = &openapiModelArtifact
 	}
 	return pOpenapiModelArtifact, nil

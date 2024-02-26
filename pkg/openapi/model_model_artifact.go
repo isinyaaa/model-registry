@@ -36,7 +36,6 @@ type ModelArtifact struct {
 	CreateTimeSinceEpoch *string `json:"createTimeSinceEpoch,omitempty"`
 	// Output only. Last update time of the resource since epoch in millisecond since epoch.
 	LastUpdateTimeSinceEpoch *string `json:"lastUpdateTimeSinceEpoch,omitempty"`
-	ArtifactType             string  `json:"artifactType"`
 	// Name of the model format.
 	ModelFormatName *string `json:"modelFormatName,omitempty"`
 	// Storage secret name.
@@ -47,6 +46,7 @@ type ModelArtifact struct {
 	ModelFormatVersion *string `json:"modelFormatVersion,omitempty"`
 	// Name of the service account with storage secret.
 	ServiceAccountName *string `json:"serviceAccountName,omitempty"`
+	ArtifactType       string  `json:"artifactType"`
 }
 
 // NewModelArtifact instantiates a new ModelArtifact object
@@ -361,30 +361,6 @@ func (o *ModelArtifact) SetLastUpdateTimeSinceEpoch(v string) {
 	o.LastUpdateTimeSinceEpoch = &v
 }
 
-// GetArtifactType returns the ArtifactType field value
-func (o *ModelArtifact) GetArtifactType() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.ArtifactType
-}
-
-// GetArtifactTypeOk returns a tuple with the ArtifactType field value
-// and a boolean to check if the value has been set.
-func (o *ModelArtifact) GetArtifactTypeOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.ArtifactType, true
-}
-
-// SetArtifactType sets field value
-func (o *ModelArtifact) SetArtifactType(v string) {
-	o.ArtifactType = v
-}
-
 // GetModelFormatName returns the ModelFormatName field value if set, zero value otherwise.
 func (o *ModelArtifact) GetModelFormatName() string {
 	if o == nil || IsNil(o.ModelFormatName) {
@@ -545,6 +521,30 @@ func (o *ModelArtifact) SetServiceAccountName(v string) {
 	o.ServiceAccountName = &v
 }
 
+// GetArtifactType returns the ArtifactType field value
+func (o *ModelArtifact) GetArtifactType() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.ArtifactType
+}
+
+// GetArtifactTypeOk returns a tuple with the ArtifactType field value
+// and a boolean to check if the value has been set.
+func (o *ModelArtifact) GetArtifactTypeOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.ArtifactType, true
+}
+
+// SetArtifactType sets field value
+func (o *ModelArtifact) SetArtifactType(v string) {
+	o.ArtifactType = v
+}
+
 func (o ModelArtifact) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -582,7 +582,6 @@ func (o ModelArtifact) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.LastUpdateTimeSinceEpoch) {
 		toSerialize["lastUpdateTimeSinceEpoch"] = o.LastUpdateTimeSinceEpoch
 	}
-	toSerialize["artifactType"] = o.ArtifactType
 	if !IsNil(o.ModelFormatName) {
 		toSerialize["modelFormatName"] = o.ModelFormatName
 	}
@@ -598,6 +597,7 @@ func (o ModelArtifact) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ServiceAccountName) {
 		toSerialize["serviceAccountName"] = o.ServiceAccountName
 	}
+	toSerialize["artifactType"] = o.ArtifactType
 	return toSerialize, nil
 }
 
