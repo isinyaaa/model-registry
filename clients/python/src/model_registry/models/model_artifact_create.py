@@ -9,10 +9,11 @@ if TYPE_CHECKING:
     from .base_artifact_create import BaseArtifactCreate
 
 from .base_artifact_create import BaseArtifactCreate
+from .model_artifact_update import ModelArtifactUpdate
 
 
 @dataclass
-class ModelArtifactCreate(BaseArtifactCreate):
+class ModelArtifactCreate(BaseArtifactCreate, ModelArtifactUpdate):
     """An ML model artifact."""
 
     @staticmethod

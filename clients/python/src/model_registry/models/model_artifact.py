@@ -10,9 +10,12 @@ from kiota_abstractions.serialization import (
     SerializationWriter,
 )
 
+from .base_artifact import BaseArtifact
+from .model_artifact_create import ModelArtifactCreate
+
 
 @dataclass
-class ModelArtifact(AdditionalDataHolder, Parsable):
+class ModelArtifact(BaseArtifact, ModelArtifactCreate, AdditionalDataHolder, Parsable):
     """An ML model artifact."""
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
@@ -36,11 +39,13 @@ class ModelArtifact(AdditionalDataHolder, Parsable):
         Returns: Dict[str, Callable[[ParseNode], None]].
         """
         fields: dict[str, Callable[[Any], None]] = {
-            "artifactType": lambda n : setattr(self, "artifact_type", n.get_str_value()),
+            "artifactType": lambda n: setattr(self, "artifact_type", n.get_str_value()),
         }
+        super_fields = super().get_field_deserializers()
+        fields.update(super_fields)
         return fields
 
-    def serialize(self,writer: SerializationWriter) -> None:
+    def serialize(self, writer: SerializationWriter) -> None:
         """Serializes information the current object
         param writer: Serialization writer to use to serialize this model
         Returns: None.
@@ -48,7 +53,6 @@ class ModelArtifact(AdditionalDataHolder, Parsable):
         if not writer:
             msg = "writer cannot be null."
             raise TypeError(msg)
+        super().serialize(writer)
         writer.write_str_value("artifactType", self.artifact_type)
         writer.write_additional_data_value(self.additional_data)
-
-
