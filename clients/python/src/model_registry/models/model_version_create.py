@@ -9,10 +9,11 @@ if TYPE_CHECKING:
     from .base_resource_create import BaseResourceCreate
 
 from .base_resource_create import BaseResourceCreate
+from .model_version_update import ModelVersionUpdate
 
 
 @dataclass
-class ModelVersionCreate(BaseResourceCreate):
+class ModelVersionCreate(BaseResourceCreate, ModelVersionUpdate):
     """Represents a ModelVersion belonging to a RegisteredModel."""
     # ID of the `RegisteredModel` to which this version belongs.
     registered_model_id: str | None = None

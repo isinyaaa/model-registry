@@ -10,9 +10,12 @@ from kiota_abstractions.serialization import (
     SerializationWriter,
 )
 
+from .base_resource import BaseResource
+from .model_version_update import ModelVersionUpdate
+
 
 @dataclass
-class ModelVersion(AdditionalDataHolder, Parsable):
+class ModelVersion(BaseResource, ModelVersionUpdate, AdditionalDataHolder, Parsable):
     """Represents a ModelVersion belonging to a RegisteredModel."""
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
@@ -38,6 +41,8 @@ class ModelVersion(AdditionalDataHolder, Parsable):
         fields: dict[str, Callable[[Any], None]] = {
             "registeredModelId": lambda n : setattr(self, "registered_model_id", n.get_str_value()),
         }
+        super_fields = super().get_field_deserializers()
+        fields.update(super_fields)
         return fields
 
     def serialize(self,writer: SerializationWriter) -> None:
@@ -48,6 +53,7 @@ class ModelVersion(AdditionalDataHolder, Parsable):
         if not writer:
             msg = "writer cannot be null."
             raise TypeError(msg)
+        super().serialize(writer)
         writer.write_str_value("registeredModelId", self.registered_model_id)
         writer.write_additional_data_value(self.additional_data)
 
