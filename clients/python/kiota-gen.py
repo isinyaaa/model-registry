@@ -33,7 +33,9 @@ def generate_kiota_py_client(root: Path):
         exit(1)
 
     machine = platform.machine().lower()
-    arch_name = next((arch.name for arch in KIOTA_ARCH_MAP if arch.matches(machine)), None)
+    arch_name = next(
+        (arch.name for arch in KIOTA_ARCH_MAP if arch.matches(machine)), None
+    )
     if arch_name is None:
         print("Unsupported architecture.")
         exit(1)
@@ -73,7 +75,7 @@ def generate_kiota_py_client(root: Path):
     command = f"""
         {kiota_bin} generate \
             --language=python --openapi="{openapi_doc}" --output="{output}" \
-            --class-name=ModelRegistryClient --namespace-name=model_registry \
+            --class-name=ModelRegistryClient \
             --clear-cache
         """
     print(f"Executing kiota command: {command}")
