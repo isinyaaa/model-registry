@@ -18,15 +18,6 @@ import (
 
 // AssertArtifactRequired checks if the required fields are not zero-ed
 func AssertArtifactRequired(obj model.Artifact) error {
-	// FIXME(manual): Artifact.ArtifactType is not present on client models
-	// elements := map[string]interface{}{
-	// 	"artifactType": obj.ArtifactType,
-	// }
-	// for name, el := range elements {
-	// 	if isZero := IsZeroValue(el); isZero {
-	// 		return &RequiredError{Field: name}
-	// 	}
-	// }
 	return nil
 }
 
