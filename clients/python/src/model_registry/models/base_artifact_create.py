@@ -9,10 +9,11 @@ if TYPE_CHECKING:
     from .base_artifact_update import BaseArtifactUpdate
 
 from .base_artifact_update import BaseArtifactUpdate
+from .base_resource_create import BaseResourceCreate
 
 
 @dataclass
-class BaseArtifactCreate(BaseArtifactUpdate):
+class BaseArtifactCreate(BaseArtifactUpdate, BaseResourceCreate):
 
     @staticmethod
     def create_from_discriminator_value(parse_node: ParseNode | None = None) -> BaseArtifactCreate:
