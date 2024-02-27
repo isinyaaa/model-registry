@@ -5,7 +5,7 @@ Types are based on [ML Metadata](https://github.com/google/ml-metadata), with Py
 
 from .artifacts import ModelArtifact
 from .contexts import ModelVersion, RegisteredModel
-from .options import ListOptions
+from .options import FindOptions, ListOptions, OrderByField, RequestOptions, SortOrder
 
 __all__ = [
     # Artifacts
@@ -15,4 +15,8 @@ __all__ = [
     "RegisteredModel",
     # Options
     "ListOptions",
+    "OrderByField",
+    "SortOrder",
+    "FindOptions",
+    "RequestOptions",
 ]
