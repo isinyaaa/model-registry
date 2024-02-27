@@ -14,9 +14,10 @@ def mr_client(mr_api: ModelRegistryAPIClient) -> ModelRegistry:
     return mr
 
 
-def test_register_new(mr_client: ModelRegistry):
+@pytest.mark.asyncio()
+async def test_register_new(mr_client: ModelRegistry):
     name = "test_model"
-    version = "1.0.0"
+    version = "test version"
     rm = mr_client.register_model(
         name,
         "s3",
@@ -27,17 +28,17 @@ def test_register_new(mr_client: ModelRegistry):
     assert rm.id is not None
 
     mr_api = mr_client._api
-    assert (mv := mr_api.get_model_version_by_params(rm.id, version)) is not None
-    assert mr_api.get_model_artifact_by_params(mv.id) is not None
+    assert (mv := await mr_api.get_model_version_by_params(rm.id, version)) is not None
+    assert await mr_api.get_model_artifact_by_params(mv.id) is not None
 
 
 def test_register_existing_version(mr_client: ModelRegistry):
     params = {
-        "name": "test_model",
+        "name": "duplicate version",
         "uri": "s3",
         "model_format_name": "test_format",
         "model_format_version": "test_version",
-        "version": "1.0.0",
+        "version": "same version",
     }
     mr_client.register_model(**params)
 
@@ -45,9 +46,10 @@ def test_register_existing_version(mr_client: ModelRegistry):
         mr_client.register_model(**params)
 
 
-def test_get(mr_client: ModelRegistry):
-    name = "test_model"
-    version = "1.0.0"
+@pytest.mark.asyncio()
+async def test_get(mr_client: ModelRegistry):
+    name = "get me"
+    version = "123"
     metadata = {"a": 1, "b": "2"}
 
     rm = mr_client.register_model(
@@ -63,8 +65,8 @@ def test_get(mr_client: ModelRegistry):
     assert rm.id == _rm.id
 
     mr_api = mr_client._api
-    assert (mv := mr_api.get_model_version_by_params(rm.id, version))
-    assert (ma := mr_api.get_model_artifact_by_params(mv.id))
+    assert (mv := await mr_api.get_model_version_by_params(rm.id, version))
+    assert (ma := await mr_api.get_model_artifact_by_params(mv.id))
 
     assert (_mv := mr_client.get_model_version(name, version))
     assert mv.id == _mv.id
@@ -74,9 +76,13 @@ def test_get(mr_client: ModelRegistry):
 
 
 def test_default_md(mr_client: ModelRegistry):
-    name = "test_model"
-    version = "1.0.0"
-    env_values = {"AWS_S3_ENDPOINT": "value1", "AWS_S3_BUCKET": "value2", "AWS_DEFAULT_REGION": "value3"}
+    name = "md model"
+    version = "md version"
+    env_values = {
+        "AWS_S3_ENDPOINT": "value1",
+        "AWS_S3_BUCKET": "value2",
+        "AWS_DEFAULT_REGION": "value3",
+    }
     for k, v in env_values.items():
         os.environ[k] = v
 
@@ -125,9 +131,13 @@ def test_hf_import_default_env(mr_client: ModelRegistry):
     """Test setting environment variables, hence triggering defaults, does _not_ interfere with HF metadata"""
     pytest.importorskip("huggingface_hub")
     name = "openai-community/gpt2"
-    version = "1.2.3"
+    version = "1.2.3.4"
     author = "test author"
-    env_values = {"AWS_S3_ENDPOINT": "value1", "AWS_S3_BUCKET": "value2", "AWS_DEFAULT_REGION": "value3"}
+    env_values = {
+        "AWS_S3_ENDPOINT": "value1",
+        "AWS_S3_BUCKET": "value2",
+        "AWS_DEFAULT_REGION": "value3",
+    }
     for k, v in env_values.items():
         os.environ[k] = v
 

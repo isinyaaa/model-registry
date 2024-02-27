@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Union
+from typing import Any, Union, get_args
 from warnings import warn
 
 from .core import ModelRegistryAPIClient
@@ -33,31 +33,41 @@ class ModelRegistry:
         self._author = author
         self._api = ModelRegistryAPIClient(server_address)
 
-    def _register_model(self, name: str) -> RegisteredModel:
-        if rm := self._api.get_registered_model_by_params(name):
+    async def _register_model(self, name: str) -> RegisteredModel:
+        if rm := await self._api.get_registered_model_by_params(name):
             return rm
 
-        return self._api.upsert_registered_model(RegisteredModel(name))
+        return await self._api.upsert_registered_model(RegisteredModel(name))
 
-    def _register_new_version(
+    async def _register_new_version(
         self, rm: RegisteredModel, version: str, author: str, /, **kwargs
     ) -> ModelVersion:
         assert rm.id is not None, "Registered model must have an ID"
-        if self._api.get_model_version_by_params(rm.id, version):
+        if await self._api.get_model_version_by_params(rm.id, version):
             msg = f"Version {version} already exists"
             raise StoreException(msg)
 
-        return self._api.upsert_model_version(
+        return await self._api.upsert_model_version(
             ModelVersion(version, author, **kwargs), rm.id
         )
 
-    def _register_model_artifact(
+    async def _register_model_artifact(
         self, mv: ModelVersion, name: str, uri: str, /, **kwargs
     ) -> ModelArtifact:
         assert mv.id is not None, "Model version must have an ID"
-        return self._api.upsert_model_artifact(
+        return await self._api.upsert_model_artifact(
             ModelArtifact(name, uri, **kwargs), mv.id
         )
+
+    def async_runner(self, coro: Any) -> Any:
+        import asyncio
+
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        return loop.run_until_complete(coro)
 
     def register_model(
         self,
@@ -96,23 +106,27 @@ class ModelRegistry:
         Returns:
             Registered model.
         """
-        rm = self._register_model(name)
-        mv = self._register_new_version(
-            rm,
-            version,
-            author or self._author,
-            description=description,
-            metadata=metadata or self.default_metadata(),
+        rm = self.async_runner(self._register_model(name))
+        mv = self.async_runner(
+            self._register_new_version(
+                rm,
+                version,
+                author or self._author,
+                description=description,
+                metadata=metadata or self.default_metadata(),
+            )
         )
-        self._register_model_artifact(
-            mv,
-            uri,
-            name,
-            model_format_name=model_format_name,
-            model_format_version=model_format_version,
-            storage_key=storage_key,
-            storage_path=storage_path,
-            service_account_name=service_account_name,
+        self.async_runner(
+            self._register_model_artifact(
+                mv,
+                name,
+                uri,
+                model_format_name=model_format_name,
+                model_format_version=model_format_version,
+                storage_key=storage_key,
+                storage_path=storage_path,
+                service_account_name=service_account_name,
+            )
         )
 
         return rm
@@ -184,11 +198,10 @@ class ModelRegistry:
             raise StoreException(msg) from e
 
         if not author:
-            # model author can be None if the repo is in a "global" namespace (i.e. no / in repo).
             if model_info.author is None:
                 model_author = "unknown"
                 warn(
-                    "Model author is unknown. This is likely because the model is in a global namespace.",
+                    "Model author is unknown.",
                     stacklevel=2,
                 )
             else:
@@ -210,7 +223,7 @@ class ModelRegistry:
                     k: v
                     for k, v in card_data.to_dict().items()
                     # TODO: (#151) preserve tags, possibly other complex metadata
-                    if isinstance(v, Union[bool, int, str, float])
+                    if isinstance(v, get_args(Union[bool, int, str, float]))
                 }
             )
         return self.register_model(
@@ -234,7 +247,7 @@ class ModelRegistry:
         Returns:
             Registered model.
         """
-        return self._api.get_registered_model_by_params(name)
+        return self.async_runner(self._api.get_registered_model_by_params(name))
 
     def get_model_version(self, name: str, version: str) -> ModelVersion | None:
         """Get a model version.
@@ -252,7 +265,7 @@ class ModelRegistry:
         if not (rm := self.get_registered_model(name)):
             msg = f"Model {name} does not exist"
             raise StoreException(msg)
-        return self._api.get_model_version_by_params(rm.id, version)
+        return self.async_runner(self._api.get_model_version_by_params(rm.id, version))
 
     def get_model_artifact(self, name: str, version: str) -> ModelArtifact | None:
         """Get a model artifact.
@@ -270,4 +283,4 @@ class ModelRegistry:
         if not (mv := self.get_model_version(name, version)):
             msg = f"Version {version} does not exist"
             raise StoreException(msg)
-        return self._api.get_model_artifact_by_params(mv.id)
+        return self.async_runner(self._api.get_model_artifact_by_params(mv.id))
