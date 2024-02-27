@@ -10,9 +10,12 @@ from kiota_abstractions.serialization import (
     SerializationWriter,
 )
 
+from .base_resource import BaseResource
+from .registered_model_create import RegisteredModelCreate
+
 
 @dataclass
-class RegisteredModel(AdditionalDataHolder, Parsable):
+class RegisteredModel(BaseResource, RegisteredModelCreate, AdditionalDataHolder, Parsable):
     """A registered model in model registry. A registered model has ModelVersion children."""
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
@@ -35,6 +38,8 @@ class RegisteredModel(AdditionalDataHolder, Parsable):
         """
         fields: dict[str, Callable[[Any], None]] = {
         }
+        super_fields = super().get_field_deserializers()
+        fields.update(super_fields)
         return fields
 
     def serialize(self,writer: SerializationWriter) -> None:
@@ -45,6 +50,7 @@ class RegisteredModel(AdditionalDataHolder, Parsable):
         if not writer:
             msg = "writer cannot be null."
             raise TypeError(msg)
+        super().serialize(writer)
         writer.write_additional_data_value(self.additional_data)
 
 

@@ -9,10 +9,11 @@ if TYPE_CHECKING:
     from .base_resource_create import BaseResourceCreate
 
 from .base_resource_create import BaseResourceCreate
+from .registered_model_update import RegisteredModelUpdate
 
 
 @dataclass
-class RegisteredModelCreate(BaseResourceCreate):
+class RegisteredModelCreate(BaseResourceCreate, RegisteredModelUpdate):
     """A registered model in model registry. A registered model has ModelVersion children."""
 
     @staticmethod
