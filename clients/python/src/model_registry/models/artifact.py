@@ -10,12 +10,18 @@ from kiota_abstractions.serialization import (
     SerializationWriter,
 )
 
+from .doc_artifact import DocArtifact
+from .model_artifact import ModelArtifact
+
 if TYPE_CHECKING:
     pass
 
 @dataclass
 class Artifact(ComposedTypeWrapper, Parsable):
     """Composed type wrapper for classes DocArtifact, ModelArtifact."""
+    doc_artifact: DocArtifact | None = None
+    model_artifact: ModelArtifact | None = None
+
     @staticmethod
     def create_from_discriminator_value(parse_node: ParseNode | None = None) -> Artifact:
         """Creates a new instance of the appropriate class based on discriminator value
@@ -31,36 +37,8 @@ class Artifact(ComposedTypeWrapper, Parsable):
             mapping_value = None
         result = Artifact()
         if mapping_value and mapping_value.casefold() == "doc-artifact".casefold():
-            from .doc_artifact import DocArtifact
-
-            result.artifact_doc_artifact = DocArtifact()
-        elif mapping_value and mapping_value.casefold() == "doc-artifact".casefold():
-            from .doc_artifact import DocArtifact
-
-            result.artifact_doc_artifact0 = DocArtifact()
-        elif mapping_value and mapping_value.casefold() == "doc-artifact".casefold():
-            from .doc_artifact import DocArtifact
-
-            result.artifact_doc_artifact1 = DocArtifact()
-        elif mapping_value and mapping_value.casefold() == "model-artifact".casefold():
-            from .model_artifact import ModelArtifact
-
-            result.artifact_model_artifact = ModelArtifact()
-        elif mapping_value and mapping_value.casefold() == "model-artifact".casefold():
-            from .model_artifact import ModelArtifact
-
-            result.artifact_model_artifact0 = ModelArtifact()
-        elif mapping_value and mapping_value.casefold() == "model-artifact".casefold():
-            from .model_artifact import ModelArtifact
-
-            result.artifact_model_artifact1 = ModelArtifact()
-        elif mapping_value and mapping_value.casefold() == "doc-artifact".casefold():
-            from .doc_artifact import DocArtifact
-
             result.doc_artifact = DocArtifact()
         elif mapping_value and mapping_value.casefold() == "model-artifact".casefold():
-            from .model_artifact import ModelArtifact
-
             result.model_artifact = ModelArtifact()
         return result
 
@@ -68,18 +46,6 @@ class Artifact(ComposedTypeWrapper, Parsable):
         """The deserialization information for the current model
         Returns: Dict[str, Callable[[ParseNode], None]].
         """
-        if self.artifact_doc_artifact:
-            return self.artifact_doc_artifact.get_field_deserializers()
-        if self.artifact_doc_artifact0:
-            return self.artifact_doc_artifact0.get_field_deserializers()
-        if self.artifact_doc_artifact1:
-            return self.artifact_doc_artifact1.get_field_deserializers()
-        if self.artifact_model_artifact:
-            return self.artifact_model_artifact.get_field_deserializers()
-        if self.artifact_model_artifact0:
-            return self.artifact_model_artifact0.get_field_deserializers()
-        if self.artifact_model_artifact1:
-            return self.artifact_model_artifact1.get_field_deserializers()
         if self.doc_artifact:
             return self.doc_artifact.get_field_deserializers()
         if self.model_artifact:
@@ -94,21 +60,8 @@ class Artifact(ComposedTypeWrapper, Parsable):
         if not writer:
             msg = "writer cannot be null."
             raise TypeError(msg)
-        if self.artifact_doc_artifact:
-            writer.write_object_value(None, self.artifact_doc_artifact)
-        elif self.artifact_doc_artifact0:
-            writer.write_object_value(None, self.artifact_doc_artifact0)
-        elif self.artifact_doc_artifact1:
-            writer.write_object_value(None, self.artifact_doc_artifact1)
-        elif self.artifact_model_artifact:
-            writer.write_object_value(None, self.artifact_model_artifact)
-        elif self.artifact_model_artifact0:
-            writer.write_object_value(None, self.artifact_model_artifact0)
-        elif self.artifact_model_artifact1:
-            writer.write_object_value(None, self.artifact_model_artifact1)
-        elif self.doc_artifact:
+        if self.doc_artifact:
             writer.write_object_value(None, self.doc_artifact)
         elif self.model_artifact:
             writer.write_object_value(None, self.model_artifact)
-
 
