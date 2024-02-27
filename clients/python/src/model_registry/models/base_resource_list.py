@@ -1,19 +1,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Callable
+from typing import Any, Callable
 
-from kiota_abstractions.serialization import ParseNode, SerializationWriter
-
-if TYPE_CHECKING:
-    from .serving_environment_list import ServingEnvironmentList
-
-from .serving_environment_list import ServingEnvironmentList
+from kiota_abstractions.serialization import Parsable, ParseNode, SerializationWriter
+from kiota_abstractions.serialization.additional_data_holder import AdditionalDataHolder
 
 
 @dataclass
-class BaseResourceList(ServingEnvironmentList):
-    """List of InferenceServices."""
+class BaseResourceList(AdditionalDataHolder, Parsable):
+    """List of BaseResource."""
     # Token to use to retrieve next page of results.
     next_page_token: str | None = None
     # Maximum number of resources to return in the result.
@@ -41,8 +37,6 @@ class BaseResourceList(ServingEnvironmentList):
             "pageSize": lambda n : setattr(self, "page_size", n.get_int_value()),
             "size": lambda n : setattr(self, "size", n.get_int_value()),
         }
-        super_fields = super().get_field_deserializers()
-        fields.update(super_fields)
         return fields
 
     def serialize(self,writer: SerializationWriter) -> None:
@@ -53,7 +47,6 @@ class BaseResourceList(ServingEnvironmentList):
         if not writer:
             msg = "writer cannot be null."
             raise TypeError(msg)
-        super().serialize(writer)
         writer.write_str_value("nextPageToken", self.next_page_token)
         writer.write_int_value("pageSize", self.page_size)
         writer.write_int_value("size", self.size)
