@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class ExecutionState(str, Enum):
     UNKNOWN = "UNKNOWN",
     NEW = "NEW",

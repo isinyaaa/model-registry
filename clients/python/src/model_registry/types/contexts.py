@@ -11,8 +11,6 @@ Todo:
 
 from __future__ import annotations
 
-from typing import Any
-
 from attrs import define, field
 
 from .base import BaseResourceModel

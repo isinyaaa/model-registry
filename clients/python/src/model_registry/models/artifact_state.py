@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class ArtifactState(str, Enum):
     UNKNOWN = "UNKNOWN",
     PENDING = "PENDING",
