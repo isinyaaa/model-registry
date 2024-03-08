@@ -13,6 +13,10 @@ from testcontainers.core.waiting_utils import wait_for_logs
 logger = logging.getLogger("model_registry")
 logger.setLevel(logging.DEBUG)
 
+import nest_asyncio
+
+nest_asyncio.apply()
+
 
 # workaround: https://stackoverflow.com/a/72104554
 @pytest.fixture(scope="session", autouse=True)

@@ -33,6 +33,10 @@ class ModelRegistry:
         self._author = author
         self._api = ModelRegistryAPIClient(server_address)
 
+        import nest_asyncio
+
+        nest_asyncio.apply()
+
     async def _register_model(self, name: str) -> RegisteredModel:
         if rm := await self._api.get_registered_model_by_params(name):
             return rm
