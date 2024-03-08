@@ -4,12 +4,12 @@ from kiota_abstractions.serialization import Parsable, ParseNode, SerializationW
 from typing import Any, Callable, Dict, List, Optional, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
-    from .registered_model_list import RegisteredModelList
+    from .model_version_list import ModelVersionList
 
-from .registered_model_list import RegisteredModelList
+from .model_version_list import ModelVersionList
 
 @dataclass
-class BaseResourceList(RegisteredModelList):
+class BaseResourceList(ModelVersionList):
     """
     List of ModelVersion entities.
     """
@@ -36,9 +36,9 @@ class BaseResourceList(RegisteredModelList):
         The deserialization information for the current model
         Returns: Dict[str, Callable[[ParseNode], None]]
         """
-        from .registered_model_list import RegisteredModelList
+        from .model_version_list import ModelVersionList
 
-        from .registered_model_list import RegisteredModelList
+        from .model_version_list import ModelVersionList
 
         fields: Dict[str, Callable[[Any], None]] = {
             "nextPageToken": lambda n : setattr(self, 'next_page_token', n.get_str_value()),
