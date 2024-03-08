@@ -11,7 +11,7 @@ from .serving_environment_list import ServingEnvironmentList
 @dataclass
 class BaseResourceList(ServingEnvironmentList):
     """
-    List of RegisteredModels.
+    List of InferenceServices.
     """
     # Token to use to retrieve next page of results.
     next_page_token: Optional[str] = None
