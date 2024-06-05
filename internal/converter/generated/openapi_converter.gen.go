@@ -645,138 +645,499 @@ func (c *OpenAPIConverterImpl) ConvertServingEnvironmentUpdate(source *openapi.S
 	}
 	return pOpenapiServingEnvironment, nil
 }
-func (c *OpenAPIConverterImpl) OverrideNotEditableForDocArtifact(source converter.OpenapiUpdateWrapper[openapi.DocArtifact]) (openapi.DocArtifact, error) {
-	openapiDocArtifact := converter.InitDocArtifactWithUpdate(source)
-	_ = source
-	return openapiDocArtifact, nil
-}
-func (c *OpenAPIConverterImpl) OverrideNotEditableForInferenceService(source converter.OpenapiUpdateWrapper[openapi.InferenceService]) (openapi.InferenceService, error) {
-	openapiInferenceService := converter.InitInferenceServiceWithUpdate(source)
+func (c *OpenAPIConverterImpl) OverrideEditableForDocArtifact(source converter.OpenapiUpdateWrapper[openapi.DocArtifact]) (openapi.DocArtifact, error) {
+	openapiDocArtifact := converter.InitWithExisting(source)
 	var pString *string
-	if source.Existing != nil {
-		pString = source.Existing.Name
-	}
-	var pString2 *string
-	if pString != nil {
-		xstring := *pString
-		pString2 = &xstring
-	}
-	openapiInferenceService.Name = pString2
-	var pString3 *string
-	if source.Existing != nil {
-		pString3 = &source.Existing.RegisteredModelId
-	}
-	var xstring2 string
-	if pString3 != nil {
-		xstring2 = *pString3
-	}
-	openapiInferenceService.RegisteredModelId = xstring2
-	var pString4 *string
-	if source.Existing != nil {
-		pString4 = &source.Existing.ServingEnvironmentId
-	}
-	var xstring3 string
-	if pString4 != nil {
-		xstring3 = *pString4
-	}
-	openapiInferenceService.ServingEnvironmentId = xstring3
-	return openapiInferenceService, nil
-}
-func (c *OpenAPIConverterImpl) OverrideNotEditableForModelArtifact(source converter.OpenapiUpdateWrapper[openapi.ModelArtifact]) (openapi.ModelArtifact, error) {
-	openapiModelArtifact := converter.InitModelArtifactWithUpdate(source)
-	var pString *string
-	if source.Existing != nil {
-		pString = &source.Existing.ArtifactType
+	if source.Update != nil {
+		pString = &source.Update.ArtifactType
 	}
 	var xstring string
 	if pString != nil {
 		xstring = *pString
 	}
-	openapiModelArtifact.ArtifactType = xstring
+	openapiDocArtifact.ArtifactType = xstring
+	var pMapStringOpenapiMetadataValue *map[string]openapi.MetadataValue
+	if source.Update != nil {
+		pMapStringOpenapiMetadataValue = source.Update.CustomProperties
+	}
+	var pMapStringOpenapiMetadataValue2 *map[string]openapi.MetadataValue
+	if pMapStringOpenapiMetadataValue != nil {
+		var mapStringOpenapiMetadataValue map[string]openapi.MetadataValue
+		if (*pMapStringOpenapiMetadataValue) != nil {
+			mapStringOpenapiMetadataValue = make(map[string]openapi.MetadataValue, len((*pMapStringOpenapiMetadataValue)))
+			for key, value := range *pMapStringOpenapiMetadataValue {
+				mapStringOpenapiMetadataValue[key] = c.openapiMetadataValueToOpenapiMetadataValue(value)
+			}
+		}
+		pMapStringOpenapiMetadataValue2 = &mapStringOpenapiMetadataValue
+	}
+	openapiDocArtifact.CustomProperties = pMapStringOpenapiMetadataValue2
 	var pString2 *string
-	if source.Existing != nil {
-		pString2 = source.Existing.Name
+	if source.Update != nil {
+		pString2 = source.Update.Description
 	}
 	var pString3 *string
 	if pString2 != nil {
 		xstring2 := *pString2
 		pString3 = &xstring2
 	}
-	openapiModelArtifact.Name = pString3
+	openapiDocArtifact.Description = pString3
+	var pString4 *string
+	if source.Update != nil {
+		pString4 = source.Update.ExternalId
+	}
+	var pString5 *string
+	if pString4 != nil {
+		xstring3 := *pString4
+		pString5 = &xstring3
+	}
+	openapiDocArtifact.ExternalId = pString5
+	var pString6 *string
+	if source.Update != nil {
+		pString6 = source.Update.Uri
+	}
+	var pString7 *string
+	if pString6 != nil {
+		xstring4 := *pString6
+		pString7 = &xstring4
+	}
+	openapiDocArtifact.Uri = pString7
+	var pOpenapiArtifactState *openapi.ArtifactState
+	if source.Update != nil {
+		pOpenapiArtifactState = source.Update.State
+	}
+	var pOpenapiArtifactState2 *openapi.ArtifactState
+	if pOpenapiArtifactState != nil {
+		openapiArtifactState, err := c.openapiArtifactStateToOpenapiArtifactState(*pOpenapiArtifactState)
+		if err != nil {
+			return openapiDocArtifact, fmt.Errorf("error setting field State: %w", err)
+		}
+		pOpenapiArtifactState2 = &openapiArtifactState
+	}
+	openapiDocArtifact.State = pOpenapiArtifactState2
+	return openapiDocArtifact, nil
+}
+func (c *OpenAPIConverterImpl) OverrideEditableForInferenceService(source converter.OpenapiUpdateWrapper[openapi.InferenceService]) (openapi.InferenceService, error) {
+	openapiInferenceService := converter.InitWithExisting(source)
+	var pMapStringOpenapiMetadataValue *map[string]openapi.MetadataValue
+	if source.Update != nil {
+		pMapStringOpenapiMetadataValue = source.Update.CustomProperties
+	}
+	var pMapStringOpenapiMetadataValue2 *map[string]openapi.MetadataValue
+	if pMapStringOpenapiMetadataValue != nil {
+		var mapStringOpenapiMetadataValue map[string]openapi.MetadataValue
+		if (*pMapStringOpenapiMetadataValue) != nil {
+			mapStringOpenapiMetadataValue = make(map[string]openapi.MetadataValue, len((*pMapStringOpenapiMetadataValue)))
+			for key, value := range *pMapStringOpenapiMetadataValue {
+				mapStringOpenapiMetadataValue[key] = c.openapiMetadataValueToOpenapiMetadataValue(value)
+			}
+		}
+		pMapStringOpenapiMetadataValue2 = &mapStringOpenapiMetadataValue
+	}
+	openapiInferenceService.CustomProperties = pMapStringOpenapiMetadataValue2
+	var pString *string
+	if source.Update != nil {
+		pString = source.Update.Description
+	}
+	var pString2 *string
+	if pString != nil {
+		xstring := *pString
+		pString2 = &xstring
+	}
+	openapiInferenceService.Description = pString2
+	var pString3 *string
+	if source.Update != nil {
+		pString3 = source.Update.ExternalId
+	}
+	var pString4 *string
+	if pString3 != nil {
+		xstring2 := *pString3
+		pString4 = &xstring2
+	}
+	openapiInferenceService.ExternalId = pString4
+	var pString5 *string
+	if source.Update != nil {
+		pString5 = source.Update.ModelVersionId
+	}
+	var pString6 *string
+	if pString5 != nil {
+		xstring3 := *pString5
+		pString6 = &xstring3
+	}
+	openapiInferenceService.ModelVersionId = pString6
+	var pString7 *string
+	if source.Update != nil {
+		pString7 = source.Update.Runtime
+	}
+	var pString8 *string
+	if pString7 != nil {
+		xstring4 := *pString7
+		pString8 = &xstring4
+	}
+	openapiInferenceService.Runtime = pString8
+	var pOpenapiInferenceServiceState *openapi.InferenceServiceState
+	if source.Update != nil {
+		pOpenapiInferenceServiceState = source.Update.DesiredState
+	}
+	var pOpenapiInferenceServiceState2 *openapi.InferenceServiceState
+	if pOpenapiInferenceServiceState != nil {
+		openapiInferenceServiceState, err := c.openapiInferenceServiceStateToOpenapiInferenceServiceState(*pOpenapiInferenceServiceState)
+		if err != nil {
+			return openapiInferenceService, fmt.Errorf("error setting field DesiredState: %w", err)
+		}
+		pOpenapiInferenceServiceState2 = &openapiInferenceServiceState
+	}
+	openapiInferenceService.DesiredState = pOpenapiInferenceServiceState2
+	var pString9 *string
+	if source.Update != nil {
+		pString9 = &source.Update.ServingEnvironmentId
+	}
+	var xstring5 string
+	if pString9 != nil {
+		xstring5 = *pString9
+	}
+	openapiInferenceService.ServingEnvironmentId = xstring5
+	return openapiInferenceService, nil
+}
+func (c *OpenAPIConverterImpl) OverrideEditableForModelArtifact(source converter.OpenapiUpdateWrapper[openapi.ModelArtifact]) (openapi.ModelArtifact, error) {
+	openapiModelArtifact := converter.InitWithExisting(source)
+	var pString *string
+	if source.Update != nil {
+		pString = &source.Update.ArtifactType
+	}
+	var xstring string
+	if pString != nil {
+		xstring = *pString
+	}
+	openapiModelArtifact.ArtifactType = xstring
+	var pMapStringOpenapiMetadataValue *map[string]openapi.MetadataValue
+	if source.Update != nil {
+		pMapStringOpenapiMetadataValue = source.Update.CustomProperties
+	}
+	var pMapStringOpenapiMetadataValue2 *map[string]openapi.MetadataValue
+	if pMapStringOpenapiMetadataValue != nil {
+		var mapStringOpenapiMetadataValue map[string]openapi.MetadataValue
+		if (*pMapStringOpenapiMetadataValue) != nil {
+			mapStringOpenapiMetadataValue = make(map[string]openapi.MetadataValue, len((*pMapStringOpenapiMetadataValue)))
+			for key, value := range *pMapStringOpenapiMetadataValue {
+				mapStringOpenapiMetadataValue[key] = c.openapiMetadataValueToOpenapiMetadataValue(value)
+			}
+		}
+		pMapStringOpenapiMetadataValue2 = &mapStringOpenapiMetadataValue
+	}
+	openapiModelArtifact.CustomProperties = pMapStringOpenapiMetadataValue2
+	var pString2 *string
+	if source.Update != nil {
+		pString2 = source.Update.Description
+	}
+	var pString3 *string
+	if pString2 != nil {
+		xstring2 := *pString2
+		pString3 = &xstring2
+	}
+	openapiModelArtifact.Description = pString3
+	var pString4 *string
+	if source.Update != nil {
+		pString4 = source.Update.ExternalId
+	}
+	var pString5 *string
+	if pString4 != nil {
+		xstring3 := *pString4
+		pString5 = &xstring3
+	}
+	openapiModelArtifact.ExternalId = pString5
+	var pString6 *string
+	if source.Update != nil {
+		pString6 = source.Update.Uri
+	}
+	var pString7 *string
+	if pString6 != nil {
+		xstring4 := *pString6
+		pString7 = &xstring4
+	}
+	openapiModelArtifact.Uri = pString7
+	var pOpenapiArtifactState *openapi.ArtifactState
+	if source.Update != nil {
+		pOpenapiArtifactState = source.Update.State
+	}
+	var pOpenapiArtifactState2 *openapi.ArtifactState
+	if pOpenapiArtifactState != nil {
+		openapiArtifactState, err := c.openapiArtifactStateToOpenapiArtifactState(*pOpenapiArtifactState)
+		if err != nil {
+			return openapiModelArtifact, fmt.Errorf("error setting field State: %w", err)
+		}
+		pOpenapiArtifactState2 = &openapiArtifactState
+	}
+	openapiModelArtifact.State = pOpenapiArtifactState2
+	var pString8 *string
+	if source.Update != nil {
+		pString8 = source.Update.ModelFormatName
+	}
+	var pString9 *string
+	if pString8 != nil {
+		xstring5 := *pString8
+		pString9 = &xstring5
+	}
+	openapiModelArtifact.ModelFormatName = pString9
+	var pString10 *string
+	if source.Update != nil {
+		pString10 = source.Update.StorageKey
+	}
+	var pString11 *string
+	if pString10 != nil {
+		xstring6 := *pString10
+		pString11 = &xstring6
+	}
+	openapiModelArtifact.StorageKey = pString11
+	var pString12 *string
+	if source.Update != nil {
+		pString12 = source.Update.StoragePath
+	}
+	var pString13 *string
+	if pString12 != nil {
+		xstring7 := *pString12
+		pString13 = &xstring7
+	}
+	openapiModelArtifact.StoragePath = pString13
+	var pString14 *string
+	if source.Update != nil {
+		pString14 = source.Update.ModelFormatVersion
+	}
+	var pString15 *string
+	if pString14 != nil {
+		xstring8 := *pString14
+		pString15 = &xstring8
+	}
+	openapiModelArtifact.ModelFormatVersion = pString15
+	var pString16 *string
+	if source.Update != nil {
+		pString16 = source.Update.ServiceAccountName
+	}
+	var pString17 *string
+	if pString16 != nil {
+		xstring9 := *pString16
+		pString17 = &xstring9
+	}
+	openapiModelArtifact.ServiceAccountName = pString17
 	return openapiModelArtifact, nil
 }
-func (c *OpenAPIConverterImpl) OverrideNotEditableForModelVersion(source converter.OpenapiUpdateWrapper[openapi.ModelVersion]) (openapi.ModelVersion, error) {
-	openapiModelVersion := converter.InitModelVersionWithUpdate(source)
+func (c *OpenAPIConverterImpl) OverrideEditableForModelVersion(source converter.OpenapiUpdateWrapper[openapi.ModelVersion]) (openapi.ModelVersion, error) {
+	openapiModelVersion := converter.InitWithExisting(source)
+	var pMapStringOpenapiMetadataValue *map[string]openapi.MetadataValue
+	if source.Update != nil {
+		pMapStringOpenapiMetadataValue = source.Update.CustomProperties
+	}
+	var pMapStringOpenapiMetadataValue2 *map[string]openapi.MetadataValue
+	if pMapStringOpenapiMetadataValue != nil {
+		var mapStringOpenapiMetadataValue map[string]openapi.MetadataValue
+		if (*pMapStringOpenapiMetadataValue) != nil {
+			mapStringOpenapiMetadataValue = make(map[string]openapi.MetadataValue, len((*pMapStringOpenapiMetadataValue)))
+			for key, value := range *pMapStringOpenapiMetadataValue {
+				mapStringOpenapiMetadataValue[key] = c.openapiMetadataValueToOpenapiMetadataValue(value)
+			}
+		}
+		pMapStringOpenapiMetadataValue2 = &mapStringOpenapiMetadataValue
+	}
+	openapiModelVersion.CustomProperties = pMapStringOpenapiMetadataValue2
 	var pString *string
-	if source.Existing != nil {
-		pString = source.Existing.Name
+	if source.Update != nil {
+		pString = source.Update.Description
 	}
 	var pString2 *string
 	if pString != nil {
 		xstring := *pString
 		pString2 = &xstring
 	}
-	openapiModelVersion.Name = pString2
+	openapiModelVersion.Description = pString2
 	var pString3 *string
-	if source.Existing != nil {
-		pString3 = &source.Existing.RegisteredModelId
+	if source.Update != nil {
+		pString3 = source.Update.ExternalId
 	}
-	var xstring2 string
+	var pString4 *string
 	if pString3 != nil {
-		xstring2 = *pString3
+		xstring2 := *pString3
+		pString4 = &xstring2
 	}
-	openapiModelVersion.RegisteredModelId = xstring2
+	openapiModelVersion.ExternalId = pString4
+	var pOpenapiModelVersionState *openapi.ModelVersionState
+	if source.Update != nil {
+		pOpenapiModelVersionState = source.Update.State
+	}
+	var pOpenapiModelVersionState2 *openapi.ModelVersionState
+	if pOpenapiModelVersionState != nil {
+		openapiModelVersionState, err := c.openapiModelVersionStateToOpenapiModelVersionState(*pOpenapiModelVersionState)
+		if err != nil {
+			return openapiModelVersion, fmt.Errorf("error setting field State: %w", err)
+		}
+		pOpenapiModelVersionState2 = &openapiModelVersionState
+	}
+	openapiModelVersion.State = pOpenapiModelVersionState2
+	var pString5 *string
+	if source.Update != nil {
+		pString5 = source.Update.Author
+	}
+	var pString6 *string
+	if pString5 != nil {
+		xstring3 := *pString5
+		pString6 = &xstring3
+	}
+	openapiModelVersion.Author = pString6
 	return openapiModelVersion, nil
 }
-func (c *OpenAPIConverterImpl) OverrideNotEditableForRegisteredModel(source converter.OpenapiUpdateWrapper[openapi.RegisteredModel]) (openapi.RegisteredModel, error) {
-	openapiRegisteredModel := converter.InitRegisteredModelWithUpdate(source)
+func (c *OpenAPIConverterImpl) OverrideEditableForRegisteredModel(source converter.OpenapiUpdateWrapper[openapi.RegisteredModel]) (openapi.RegisteredModel, error) {
+	openapiRegisteredModel := converter.InitWithExisting(source)
+	var pMapStringOpenapiMetadataValue *map[string]openapi.MetadataValue
+	if source.Update != nil {
+		pMapStringOpenapiMetadataValue = source.Update.CustomProperties
+	}
+	var pMapStringOpenapiMetadataValue2 *map[string]openapi.MetadataValue
+	if pMapStringOpenapiMetadataValue != nil {
+		var mapStringOpenapiMetadataValue map[string]openapi.MetadataValue
+		if (*pMapStringOpenapiMetadataValue) != nil {
+			mapStringOpenapiMetadataValue = make(map[string]openapi.MetadataValue, len((*pMapStringOpenapiMetadataValue)))
+			for key, value := range *pMapStringOpenapiMetadataValue {
+				mapStringOpenapiMetadataValue[key] = c.openapiMetadataValueToOpenapiMetadataValue(value)
+			}
+		}
+		pMapStringOpenapiMetadataValue2 = &mapStringOpenapiMetadataValue
+	}
+	openapiRegisteredModel.CustomProperties = pMapStringOpenapiMetadataValue2
 	var pString *string
-	if source.Existing != nil {
-		pString = source.Existing.Name
+	if source.Update != nil {
+		pString = source.Update.Description
 	}
 	var pString2 *string
 	if pString != nil {
 		xstring := *pString
 		pString2 = &xstring
 	}
-	openapiRegisteredModel.Name = pString2
+	openapiRegisteredModel.Description = pString2
+	var pString3 *string
+	if source.Update != nil {
+		pString3 = source.Update.ExternalId
+	}
+	var pString4 *string
+	if pString3 != nil {
+		xstring2 := *pString3
+		pString4 = &xstring2
+	}
+	openapiRegisteredModel.ExternalId = pString4
+	var pString5 *string
+	if source.Update != nil {
+		pString5 = source.Update.Owner
+	}
+	var pString6 *string
+	if pString5 != nil {
+		xstring3 := *pString5
+		pString6 = &xstring3
+	}
+	openapiRegisteredModel.Owner = pString6
+	var pOpenapiRegisteredModelState *openapi.RegisteredModelState
+	if source.Update != nil {
+		pOpenapiRegisteredModelState = source.Update.State
+	}
+	var pOpenapiRegisteredModelState2 *openapi.RegisteredModelState
+	if pOpenapiRegisteredModelState != nil {
+		openapiRegisteredModelState, err := c.openapiRegisteredModelStateToOpenapiRegisteredModelState(*pOpenapiRegisteredModelState)
+		if err != nil {
+			return openapiRegisteredModel, fmt.Errorf("error setting field State: %w", err)
+		}
+		pOpenapiRegisteredModelState2 = &openapiRegisteredModelState
+	}
+	openapiRegisteredModel.State = pOpenapiRegisteredModelState2
 	return openapiRegisteredModel, nil
 }
-func (c *OpenAPIConverterImpl) OverrideNotEditableForServeModel(source converter.OpenapiUpdateWrapper[openapi.ServeModel]) (openapi.ServeModel, error) {
-	openapiServeModel := converter.InitServeModelWithUpdate(source)
+func (c *OpenAPIConverterImpl) OverrideEditableForServeModel(source converter.OpenapiUpdateWrapper[openapi.ServeModel]) (openapi.ServeModel, error) {
+	openapiServeModel := converter.InitWithExisting(source)
+	var pOpenapiExecutionState *openapi.ExecutionState
+	if source.Update != nil {
+		pOpenapiExecutionState = source.Update.LastKnownState
+	}
+	var pOpenapiExecutionState2 *openapi.ExecutionState
+	if pOpenapiExecutionState != nil {
+		openapiExecutionState, err := c.openapiExecutionStateToOpenapiExecutionState(*pOpenapiExecutionState)
+		if err != nil {
+			return openapiServeModel, fmt.Errorf("error setting field LastKnownState: %w", err)
+		}
+		pOpenapiExecutionState2 = &openapiExecutionState
+	}
+	openapiServeModel.LastKnownState = pOpenapiExecutionState2
+	var pMapStringOpenapiMetadataValue *map[string]openapi.MetadataValue
+	if source.Update != nil {
+		pMapStringOpenapiMetadataValue = source.Update.CustomProperties
+	}
+	var pMapStringOpenapiMetadataValue2 *map[string]openapi.MetadataValue
+	if pMapStringOpenapiMetadataValue != nil {
+		var mapStringOpenapiMetadataValue map[string]openapi.MetadataValue
+		if (*pMapStringOpenapiMetadataValue) != nil {
+			mapStringOpenapiMetadataValue = make(map[string]openapi.MetadataValue, len((*pMapStringOpenapiMetadataValue)))
+			for key, value := range *pMapStringOpenapiMetadataValue {
+				mapStringOpenapiMetadataValue[key] = c.openapiMetadataValueToOpenapiMetadataValue(value)
+			}
+		}
+		pMapStringOpenapiMetadataValue2 = &mapStringOpenapiMetadataValue
+	}
+	openapiServeModel.CustomProperties = pMapStringOpenapiMetadataValue2
 	var pString *string
-	if source.Existing != nil {
-		pString = source.Existing.Name
+	if source.Update != nil {
+		pString = source.Update.Description
 	}
 	var pString2 *string
 	if pString != nil {
 		xstring := *pString
 		pString2 = &xstring
 	}
-	openapiServeModel.Name = pString2
+	openapiServeModel.Description = pString2
 	var pString3 *string
-	if source.Existing != nil {
-		pString3 = &source.Existing.ModelVersionId
+	if source.Update != nil {
+		pString3 = source.Update.ExternalId
 	}
-	var xstring2 string
+	var pString4 *string
 	if pString3 != nil {
-		xstring2 = *pString3
+		xstring2 := *pString3
+		pString4 = &xstring2
 	}
-	openapiServeModel.ModelVersionId = xstring2
+	openapiServeModel.ExternalId = pString4
 	return openapiServeModel, nil
 }
-func (c *OpenAPIConverterImpl) OverrideNotEditableForServingEnvironment(source converter.OpenapiUpdateWrapper[openapi.ServingEnvironment]) (openapi.ServingEnvironment, error) {
-	openapiServingEnvironment := converter.InitServingEnvironmentWithUpdate(source)
+func (c *OpenAPIConverterImpl) OverrideEditableForServingEnvironment(source converter.OpenapiUpdateWrapper[openapi.ServingEnvironment]) (openapi.ServingEnvironment, error) {
+	openapiServingEnvironment := converter.InitWithExisting(source)
+	var pMapStringOpenapiMetadataValue *map[string]openapi.MetadataValue
+	if source.Update != nil {
+		pMapStringOpenapiMetadataValue = source.Update.CustomProperties
+	}
+	var pMapStringOpenapiMetadataValue2 *map[string]openapi.MetadataValue
+	if pMapStringOpenapiMetadataValue != nil {
+		var mapStringOpenapiMetadataValue map[string]openapi.MetadataValue
+		if (*pMapStringOpenapiMetadataValue) != nil {
+			mapStringOpenapiMetadataValue = make(map[string]openapi.MetadataValue, len((*pMapStringOpenapiMetadataValue)))
+			for key, value := range *pMapStringOpenapiMetadataValue {
+				mapStringOpenapiMetadataValue[key] = c.openapiMetadataValueToOpenapiMetadataValue(value)
+			}
+		}
+		pMapStringOpenapiMetadataValue2 = &mapStringOpenapiMetadataValue
+	}
+	openapiServingEnvironment.CustomProperties = pMapStringOpenapiMetadataValue2
 	var pString *string
-	if source.Existing != nil {
-		pString = source.Existing.Name
+	if source.Update != nil {
+		pString = source.Update.Description
 	}
 	var pString2 *string
 	if pString != nil {
 		xstring := *pString
 		pString2 = &xstring
 	}
-	openapiServingEnvironment.Name = pString2
+	openapiServingEnvironment.Description = pString2
+	var pString3 *string
+	if source.Update != nil {
+		pString3 = source.Update.ExternalId
+	}
+	var pString4 *string
+	if pString3 != nil {
+		xstring2 := *pString3
+		pString4 = &xstring2
+	}
+	openapiServingEnvironment.ExternalId = pString4
 	return openapiServingEnvironment, nil
 }
 func (c *OpenAPIConverterImpl) openapiArtifactStateToOpenapiArtifactState(source openapi.ArtifactState) (openapi.ArtifactState, error) {

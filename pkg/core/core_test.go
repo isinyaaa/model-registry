@@ -2514,7 +2514,7 @@ func (suite *CoreTestSuite) TestUpdateInferenceService() {
 	prevRegModelId := updatedEntity.RegisteredModelId
 	updatedEntity.RegisteredModelId = ""
 	updatedEntity, err = service.UpsertInferenceService(updatedEntity)
-	suite.Nil(err)
+	suite.Nilf(err, "error updating new model version for %d: %v", updateEntityId, err)
 	suite.Equal(prevRegModelId, updatedEntity.RegisteredModelId)
 }
 
@@ -2539,7 +2539,7 @@ func (suite *CoreTestSuite) TestUpdateInferenceServiceFailure() {
 	}
 
 	createdEntity, err := service.UpsertInferenceService(eut)
-	suite.Nilf(err, "error creating new eut for %v", parentResourceId)
+	suite.Nilf(err, "error creating new eut for %s: %v", parentResourceId, err)
 
 	suite.NotNilf(createdEntity.Id, "created eut should not have nil Id")
 

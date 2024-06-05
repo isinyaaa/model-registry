@@ -20,7 +20,7 @@ type visitor struct {
 	entities map[string]*oapiEntity
 }
 
-func newVisitor(t *testing.T, f *ast.File) visitor {
+func newVisitor(t *testing.T) visitor {
 	return visitor{
 		t: t,
 		entities: map[string]*oapiEntity{
@@ -154,7 +154,7 @@ func TestOverrideNotEditableFields(t *testing.T) {
 	filePath := fmt.Sprintf("%s/openapi_converter.go", wd)
 	f, _ := parser.ParseFile(fset, filePath, nil, parser.ParseComments)
 
-	v := newVisitor(t, f)
+	v := newVisitor(t)
 	ast.Walk(v, f)
 }
 

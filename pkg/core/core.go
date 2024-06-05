@@ -129,7 +129,7 @@ func (serv *ModelRegistryService) UpsertRegisteredModel(registeredModel *openapi
 			return nil, err
 		}
 
-		withNotEditable, err := serv.openapiConv.OverrideNotEditableForRegisteredModel(converter.NewOpenapiUpdateWrapper(existing, registeredModel))
+		withNotEditable, err := serv.openapiConv.OverrideEditableForRegisteredModel(converter.NewOpenapiUpdateWrapper(existing, registeredModel))
 		if err != nil {
 			return nil, fmt.Errorf("%v: %w", err, api.ErrBadRequest)
 		}
@@ -331,7 +331,7 @@ func (serv *ModelRegistryService) UpsertModelVersion(modelVersion *openapi.Model
 			return nil, err
 		}
 
-		withNotEditable, err := serv.openapiConv.OverrideNotEditableForModelVersion(converter.NewOpenapiUpdateWrapper(existing, modelVersion))
+		withNotEditable, err := serv.openapiConv.OverrideEditableForModelVersion(converter.NewOpenapiUpdateWrapper(existing, modelVersion))
 		if err != nil {
 			return nil, fmt.Errorf("%v: %w", err, api.ErrBadRequest)
 		}
@@ -573,7 +573,7 @@ func (serv *ModelRegistryService) UpsertArtifact(artifact *openapi.Artifact, mod
 				return nil, err
 			}
 
-			withNotEditable, err := serv.openapiConv.OverrideNotEditableForModelArtifact(converter.NewOpenapiUpdateWrapper(existing, ma))
+			withNotEditable, err := serv.openapiConv.OverrideEditableForModelArtifact(converter.NewOpenapiUpdateWrapper(existing, ma))
 			if err != nil {
 				return nil, fmt.Errorf("%v: %w", err, api.ErrBadRequest)
 			}
@@ -605,7 +605,7 @@ func (serv *ModelRegistryService) UpsertArtifact(artifact *openapi.Artifact, mod
 				return nil, fmt.Errorf("mismatched types, artifact with id %s is not a doc artifact: %w", *da.Id, api.ErrBadRequest)
 			}
 
-			withNotEditable, err := serv.openapiConv.OverrideNotEditableForDocArtifact(converter.NewOpenapiUpdateWrapper(existing.DocArtifact, da))
+			withNotEditable, err := serv.openapiConv.OverrideEditableForDocArtifact(converter.NewOpenapiUpdateWrapper(existing.DocArtifact, da))
 			if err != nil {
 				return nil, fmt.Errorf("%v: %w", err, api.ErrBadRequest)
 			}
@@ -880,7 +880,7 @@ func (serv *ModelRegistryService) UpsertServingEnvironment(servingEnvironment *o
 			return nil, err
 		}
 
-		withNotEditable, err := serv.openapiConv.OverrideNotEditableForServingEnvironment(converter.NewOpenapiUpdateWrapper(existing, servingEnvironment))
+		withNotEditable, err := serv.openapiConv.OverrideEditableForServingEnvironment(converter.NewOpenapiUpdateWrapper(existing, servingEnvironment))
 		if err != nil {
 			return nil, fmt.Errorf("%v: %w", err, api.ErrBadRequest)
 		}
@@ -1038,7 +1038,7 @@ func (serv *ModelRegistryService) UpsertInferenceService(inferenceService *opena
 			return nil, err
 		}
 
-		withNotEditable, err := serv.openapiConv.OverrideNotEditableForInferenceService(converter.NewOpenapiUpdateWrapper(existing, inferenceService))
+		withNotEditable, err := serv.openapiConv.OverrideEditableForInferenceService(converter.NewOpenapiUpdateWrapper(existing, inferenceService))
 		if err != nil {
 			return nil, err
 		}
@@ -1279,7 +1279,7 @@ func (serv *ModelRegistryService) UpsertServeModel(serveModel *openapi.ServeMode
 			return nil, err
 		}
 
-		withNotEditable, err := serv.openapiConv.OverrideNotEditableForServeModel(converter.NewOpenapiUpdateWrapper(existing, serveModel))
+		withNotEditable, err := serv.openapiConv.OverrideEditableForServeModel(converter.NewOpenapiUpdateWrapper(existing, serveModel))
 		if err != nil {
 			return nil, err
 		}
