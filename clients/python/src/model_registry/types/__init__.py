@@ -4,7 +4,7 @@ Types are based on [ML Metadata](https://github.com/google/ml-metadata), with Py
 """
 
 from .artifacts import Artifact, ArtifactState, DocArtifact, ModelArtifact
-from .base import SupportedTypes
+from .base import SupportedTypes, validate_metadata
 from .contexts import (
     ModelVersion,
     ModelVersionState,
@@ -15,6 +15,9 @@ from .options import ListOptions
 from .pager import Pager
 
 __all__ = [
+    # Base
+    "SupportedTypes",
+    "validate_metadata",
     # Artifacts
     "Artifact",
     "ArtifactState",
@@ -25,7 +28,6 @@ __all__ = [
     "ModelVersionState",
     "RegisteredModel",
     "RegisteredModelState",
-    "SupportedTypes",
     # Options
     "ListOptions",
     # Pager

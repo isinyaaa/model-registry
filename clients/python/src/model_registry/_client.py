@@ -9,7 +9,7 @@ from pathlib import Path
 from warnings import warn
 
 from .core import ModelRegistryAPIClient
-from .exceptions import StoreError
+from .exceptions import StoreError, UnsupportedType
 from .types import (
     ListOptions,
     ModelArtifact,
@@ -17,6 +17,7 @@ from .types import (
     Pager,
     RegisteredModel,
     SupportedTypes,
+    validate_metadata,
 )
 
 ModelTypes = t.Union[RegisteredModel, ModelVersion, ModelArtifact]
@@ -170,6 +171,9 @@ class ModelRegistry:
         Returns:
             Registered model.
         """
+        if metadata and not validate_metadata(metadata):
+            msg = "Metadata must be a mapping of supported types"
+            raise UnsupportedType(msg)
         rm = self.async_runner(self._register_model(name, owner=owner or self._author))
         mv = self.async_runner(
             self._register_new_version(
