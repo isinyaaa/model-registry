@@ -295,16 +295,10 @@ class ModelRegistry:
             "model_origin": "huggingface_hub",
             "model_author": model_author,
         }
-        # card_data is the new field, but let's use the old one for backwards compatibility.
-        if card_data := model_info.cardData:
-            metadata.update(
-                {
-                    k: v
-                    for k, v in card_data.to_dict().items()
-                    # TODO: (#151) preserve tags, possibly other complex metadata
-                    if isinstance(v, t.get_args(SupportedTypes))
-                }
-            )
+        if card_data := model_info.card_data:
+            data = card_data.to_dict()
+            metadata.update({t: "" for t in data.pop("tags", [])})
+            metadata.update(data)
         return self.register_model(
             model_name or model_info.id,
             source_uri,

@@ -514,6 +514,14 @@ def test_hf_import(client: ModelRegistry):
         == "https://huggingface.co/openai-community/gpt2/resolve/main/onnx/decoder_model.onnx"
     )
     assert mv.custom_properties["repo"] == name
+    # TODO: get a stable model with more metadata types
+    expected_metadata = {
+        "language": "en",
+        "license": "mit",
+        "exbert": "",
+    }
+    for k, prop in mv.custom_properties.items():
+        assert prop == expected_metadata.get(k, "")
     assert client.get_model_artifact(name, version)
 
 
@@ -529,8 +537,7 @@ def test_hf_import_default_env(client: ModelRegistry):
         "AWS_S3_BUCKET": "value2",
         "AWS_DEFAULT_REGION": "value3",
     }
-    for k, v in env_values.items():
-        os.environ[k] = v
+    os.environ.update(env_values)
 
     assert client.register_hf_model(
         name,
