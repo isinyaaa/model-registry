@@ -2,15 +2,33 @@
 
 from __future__ import annotations
 
+import base64
+import json
+import typing as t
 from abc import ABC, abstractmethod
 from collections.abc import Mapping, Sequence
-from typing import Any, Union, get_args
 
 from pydantic import BaseModel, ConfigDict
 
 from mr_openapi.models.metadata_value import MetadataValue
 
-SupportedTypes = Union[bool, int, float, str]
+SupportedTypes = t.Union[bool, int, float, str, list, dict]
+
+
+def validate_metadata(
+    meta: Mapping[str, SupportedTypes] | Sequence[SupportedTypes],
+) -> bool:
+    """Validate metadata.
+
+    Checks if the metadata is a valid dictionary of supported types.
+    """
+    vals = meta if isinstance(meta, Sequence) else meta.values()
+    for v in vals:
+        if isinstance(v, (list, dict)):
+            return validate_metadata(v)
+        if not isinstance(v, t.get_args(SupportedTypes)):
+            return False
+    return True
 
 
 class BaseResourceModel(BaseModel, ABC):
@@ -38,16 +56,16 @@ class BaseResourceModel(BaseModel, ABC):
     custom_properties: Mapping[str, SupportedTypes] | None = None
 
     @abstractmethod
-    def create(self, **kwargs) -> Any:
+    def create(self, **kwargs) -> t.Any:
         """Convert the object to a create request."""
 
     @abstractmethod
-    def update(self, **kwargs) -> Any:
+    def update(self, **kwargs) -> t.Any:
         """Convert the object to an update request."""
 
     @classmethod
     @abstractmethod
-    def from_basemodel(cls, source: Any) -> Any:
+    def from_basemodel(cls, source: t.Any) -> t.Any:
         """Create a new object from a BaseModel object."""
 
     def _map_custom_properties(
@@ -62,20 +80,25 @@ class BaseResourceModel(BaseModel, ABC):
         if not self.custom_properties:
             return None
 
-        def get_meta_type(v: SupportedTypes) -> str:
-            if isinstance(v, float):
-                return "double"
-            if isinstance(v, str):
-                return "string"
-            return type(v).__name__.lower()
-
         def get_meta_value(v: SupportedTypes) -> MetadataValue:
-            type = get_meta_type(v)
-            v = str(v) if isinstance(v, int) and not isinstance(v, bool) else v
+            if isinstance(v, float):
+                meta_type = "double"
+            elif isinstance(v, str):
+                meta_type = "string"
+            elif isinstance(v, (list, dict)):
+                meta_type = "struct"
+                if isinstance(v, list):
+                    v = {str(i): x for i, x in enumerate(v)}
+                v = base64.b64encode(  # encode as base64
+                    json.dumps(v).encode()  # dump to json then encode as bytes
+                ).decode()  # decode to string (keeping base64 encoding)
+            else:
+                meta_type = type(v).__name__.lower()
+                v = str(v) if isinstance(v, int) and not isinstance(v, bool) else v
             return MetadataValue.from_dict(
                 {
-                    f"{type}_value": v,
-                    "metadataType": f"Metadata{type.capitalize()}Value",
+                    f"{meta_type}_value": v,
+                    "metadataType": f"Metadata{meta_type.capitalize()}Value",
                 }
             )
 
@@ -90,12 +113,17 @@ class BaseResourceModel(BaseModel, ABC):
     def _unmap_custom_properties(
         cls, custom_properties: dict[str, MetadataValue]
     ) -> dict[str, SupportedTypes]:
-        def get_meta_value(meta: Any) -> SupportedTypes:
+        def get_meta_value(meta: t.Any) -> SupportedTypes:
             type_name = meta.metadata_type[8:-5].lower()
             # Metadata type names are in the format Metadata<Type>Value
             v = getattr(meta, f"{type_name}_value")
             if type_name == "int":
                 return int(v)
+            if type_name == "struct":
+                data = t.cast(dict[str, t.Any], json.loads(base64.b64decode(v)))
+                if all(k.isdigit() for k in data):
+                    return list(data.values())
+                return data
             return v
 
         return {
@@ -103,13 +131,13 @@ class BaseResourceModel(BaseModel, ABC):
             for name, meta_value in custom_properties.items()
             if isinstance(
                 value := get_meta_value(meta_value.actual_instance),
-                get_args(SupportedTypes),
+                t.get_args(SupportedTypes),
             )
         }
 
     def _props_as_dict(
         self, exclude: Sequence[str] | None = None, alias: bool = False
-    ) -> dict[str, Any]:
+    ) -> dict[str, t.Any]:
         exclude = exclude or []
         return {
             k: getattr(self, k)
