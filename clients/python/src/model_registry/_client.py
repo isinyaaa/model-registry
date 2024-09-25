@@ -250,7 +250,7 @@ class ModelRegistry:
             Registered model.
         """
         try:
-            from huggingface_hub import HfApi, hf_hub_url, utils
+            from huggingface_hub import HfApi, ModelCard, hf_hub_url, utils
         except ImportError as e:
             msg = """package `huggingface-hub` is not installed.
             To import models from Hugging Face Hub, start by installing the `huggingface-hub` package, either directly or as an
@@ -276,18 +276,7 @@ class ModelRegistry:
             msg = f"Revision {git_ref} does not exist"
             raise StoreError(msg) from e
 
-        if not author:
-            # model author can be None if the repo is in a "global" namespace (i.e. no / in repo).
-            if model_info.author is None:
-                model_author = "unknown"
-                warn(
-                    "Model author is unknown. This is likely because the model is in a global namespace.",
-                    stacklevel=2,
-                )
-            else:
-                model_author = model_info.author
-        else:
-            model_author = author
+        model_author = author or model_info.author
         source_uri = hf_hub_url(repo, path, revision=git_ref)
         metadata = {
             "repo": repo,
@@ -295,6 +284,8 @@ class ModelRegistry:
             "model_origin": "huggingface_hub",
             "model_author": model_author,
         }
+        if model_card := ModelCard.load(repo):
+            metadata["model_card_md"] = model_card.text
         if card_data := model_info.card_data:
             data = card_data.to_dict()
             metadata.update({t: "" for t in data.pop("tags", [])})
